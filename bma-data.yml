@@ -1,0 +1,47 @@
+# ดึงข้อมูลสดของ กทม. (now.bangkok.go.th) มาเก็บในโฟลเดอร์ bma/ ของ repo ทุก ~10 นาที
+# หน้าเว็บอ่านไฟล์จากโดเมนเดียวกัน จึงไม่ติด CORS และไม่ต้องมีเซิร์ฟเวอร์ตัวกลาง
+name: BMA data
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # GitHub อาจเลื่อนเวลารันได้ 5–20 นาทีช่วงคนใช้เยอะ
+  workflow_dispatch:          # กดรันเองได้ที่แท็บ Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bma-data
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download BMA JSON
+        run: |
+          mkdir -p bma
+          ok=0
+          for f in road-flood-data.json canal-water-data.json nowcast-data.json cctv-flood-data.json; do
+            if curl -fsSL --max-time 30 -A 'Mozilla/5.0 (flood-watch; github-actions)' \
+                 "https://now.bangkok.go.th/$f?t=$(date +%s)" -o "/tmp/$f" \
+               && python3 -c "import json,sys; json.load(open('/tmp/$f'))"; then
+              mv "/tmp/$f" "bma/$f"; ok=$((ok+1)); echo "OK  $f"
+            else
+              echo "::warning::ดึง $f ไม่สำเร็จ (เก็บไฟล์เดิมไว้)"
+            fi
+          done
+          echo "ได้ $ok/4 ไฟล์"
+          [ "$ok" -gt 0 ] || { echo "::error::ดึงข้อมูล กทม. ไม่ได้เลย — เว็บ กทม. อาจบล็อกเครื่องของ GitHub ให้ใช้ Cloudflare Worker แทน"; exit 1; }
+
+      - name: Commit if changed
+        run: |
+          git config user.name  'bma-data-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add bma
+          if git diff --cached --quiet; then echo 'ไม่มีข้อมูลใหม่'; exit 0; fi
+          git commit -m "BMA data $(TZ=Asia/Bangkok date '+%Y-%m-%d %H:%M')"
+          git push
