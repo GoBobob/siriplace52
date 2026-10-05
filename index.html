@@ -326,12 +326,14 @@ const CONFIG = {
   lat: 13.88686, lon: 100.62802,
   // ตัวกลาง (CORS proxy) สำหรับข้อมูล กทม. เช่น 'https://your-worker.workers.dev/' — เว้นว่างได้
   // ข้อมูล กทม.: 'auto' = อ่านจากโฟลเดอร์ bma/ ข้างหน้าเว็บ (GitHub Actions อัปเดตให้) · หรือใส่ลิงก์ Cloudflare Worker · '' = ปิด
-  bmaProxy: 'auto',
+  bmaProxy: '', // ใส่ 'auto' ถ้าตั้ง GitHub Actions ดึงไฟล์ bma/ ไว้ (ดู README) · ตอนนี้ใช้ bmaMirror แทน
   // สำรอง: ข้อมูล กทม. ที่เว็บเฝ้าน้ำ (faonam.com) ดึงมาเปิดให้ใช้ (อัปเดตทุก ~5 นาที) ใช้เมื่อแหล่งด้านบนไม่มี/ค้าง · '' = ปิด
   bmaMirror: 'https://faonam.com/api/bma/',
   thaiwater: 'https://api-v3.thaiwater.net/api/v1/thaiwater30/',
   // สำรองเมื่อ ThaiWater ปฏิเสธเพราะเรียกถี่เกิน (HTTP 429): สำเนาที่ faonam.com เก็บไว้ (อัปเดตทุก ~2–3 นาที) · '' = ปิด
   twMirror: 'https://faonam.com/api/tw/',
+  // กรณีศึกษา: ไม่ส่งชื่อเว็บ (Referer) ไปกับคำขอถึง ThaiWater — ThaiWater จำกัดโควตาของ github.io ต่ำกว่าเว็บอื่น · false = ส่งตามปกติ
+  twNoReferrer: true,
   graphCacheMin: 120, // ข้อมูลย้อนหลัง (กราฟ) เก็บในเบราว์เซอร์กี่นาทีก่อนดึงใหม่
   refreshMinutes: 10,
   // สถานี ThaiWater ที่ใช้
@@ -368,10 +370,10 @@ const CONFIG = {
     baseFrom: '2026-09-15', baseTo: '2026-09-24',   // ช่วงระดับปกติก่อนน้ำท่วม
     from: '2026-09-20',                               // ค้นหาจุดสูงสุดตั้งแต่วันนี้ถึงปัจจุบัน
     stations: [
-      {id:11, code:'BKK001', label:'คลองสอง ในประตูคลองสองสายใต้ (ฝั่งหมู่บ้าน 4 กม.)', short:'คลองสอง (ในประตู)', w:.3, color:'#2F72A0', alt:{id:61, code:'WL.SST.01', base:0.03, peak:1.57, peakT:'2026-09-26 19:00'}}, // alt = เซนเซอร์ กทม. จุดเดียวกัน (อ่านต่ำกว่า สสน. ~25 ซม.) ใช้ระดับปกติ/จุดสูงสุดวันแย่สุดของเซนเซอร์ กทม. เอง (ค่าคงที่จากประวัติ ThaiWater)
-      {id:8,  code:'BKK020', label:'คลองหกวาสายล่าง นอกประตูคลองสองสายใต้ (ริมสายไหม)', short:'หกวาสายล่าง (นอกประตู)', w:.05, color:'#B04A2B'},
-      {id:37, code:'BKK015', label:'คลองหกวา ลำลูกกา (น้ำทุ่งไหลมาตามหกวา 15 กม.)', short:'หกวา ลำลูกกา', w:.1, color:'#B4761F'},
-      {id:36, code:'BKK013', label:'คลองระพีพัฒน์แยกใต้ (ต้นน้ำทุ่งตะวันออก)', short:'ระพีพัฒน์ใต้', w:.1, color:'#7A5BA8'},
+      {id:11, code:'BKK001', label:'คลองสอง ในประตูคลองสองสายใต้ (ฝั่งหมู่บ้าน 4 กม.)', short:'คลองสอง (ในประตู)', w:.3, color:'#2F72A0', fb:{base:0.283, peak:1.832, peakT:'2026-09-26 19:00'}, alt:{id:61, code:'WL.SST.01', base:0.03, peak:1.57, peakT:'2026-09-26 19:00'}}, // alt = เซนเซอร์ กทม. จุดเดียวกัน (อ่านต่ำกว่า สสน. ~25 ซม.) ใช้ระดับปกติ/จุดสูงสุดวันแย่สุดของเซนเซอร์ กทม. เอง (ค่าคงที่จากประวัติ ThaiWater)
+      {id:8,  code:'BKK020', label:'คลองหกวาสายล่าง นอกประตูคลองสองสายใต้ (ริมสายไหม)', short:'หกวาสายล่าง (นอกประตู)', w:.05, color:'#B04A2B', fb:{base:1.075, peak:2.189, peakT:'2026-09-28 12:30'}},
+      {id:37, code:'BKK015', label:'คลองหกวา ลำลูกกา (น้ำทุ่งไหลมาตามหกวา 15 กม.)', short:'หกวา ลำลูกกา', w:.1, color:'#B4761F', fb:{base:1.139, peak:2.653, peakT:'2026-09-25 14:50'}},
+      {id:36, code:'BKK013', label:'คลองระพีพัฒน์แยกใต้ (ต้นน้ำทุ่งตะวันออก)', short:'ระพีพัฒน์ใต้', w:.1, color:'#7A5BA8', fb:{base:2.902, peak:4.705, peakT:'2026-09-26 08:10'}},
     ],
     road: {worstCm:20, w:.3, label:'น้ำบนถนนรอบโครงการ (≤ 2.5 กม.)'},
     rain: {worstMm:85, w:.15, label:'ฝน 24 ชม. (สูงสุดในสายไหม 85 มม.)'},
@@ -390,11 +392,15 @@ function fmt(n,d=0){return n==null||isNaN(n)?'–':Number(n).toLocaleString('th-
 function parseTH(s){if(!s)return null;const d=new Date(String(s).replace(' ','T')+(String(s).length<=16?':00+07:00':''));return isNaN(d)?null:d}
 function ago(d){if(!d)return '';const m=Math.round((Date.now()-d)/60000);if(m<60)return m+' นาทีที่แล้ว';const h=Math.round(m/60);if(h<48)return h+' ชม.ที่แล้ว';return Math.round(h/24)+' วันที่แล้ว'}
 function hhmm(d){return d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Bangkok'})}
-async function getJSON(url,ms=25000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(t)}}
+async function getJSON(url,ms=25000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal,...(CONFIG.twNoReferrer&&url.startsWith(CONFIG.thaiwater)?{referrerPolicy:'no-referrer'}:{})});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(t)}}
 // ดึงข้อมูล ThaiWater: ลองต้นทางก่อน ถ้าถูกจำกัด (429) หรือดึงไม่ได้ ใช้สำเนา faonam.com (เฉพาะชุดข้อมูลที่เขามี)
+const twMem={},TW_TTL={rain_24h:30,warning:30,flood_road:30}; // นาที: ชุดที่เปลี่ยนช้า ไม่ต้องดึงทุก 10 นาที
 async function getTW(path,ms){
-  try{return await getJSON(CONFIG.thaiwater+path,ms)}
-  catch(e){if(CONFIG.twMirror&&/^public\/(waterlevel_load|rain_24h|warning|flood_road)\b/.test(path)){const j=await getJSON(CONFIG.twMirror+path,ms);state.twMirror=true;return j}throw e}
+  const kind=(path.match(/^public\/(\w+)/)||[])[1],ttl=TW_TTL[kind];const m=twMem[path];
+  if(ttl&&m&&Date.now()-m.t<ttl*60e3)return m.j;
+  const keep=j=>{if(ttl)twMem[path]={t:Date.now(),j};return j};
+  try{return keep(await getJSON(CONFIG.thaiwater+path,ms))}
+  catch(e){if(CONFIG.twMirror&&/^public\/(waterlevel_load|rain_24h|warning|flood_road)\b/.test(path)){const j=await getJSON(CONFIG.twMirror+path,ms);state.twMirror=true;return keep(j)}if(m){return m.j}throw e}
 }
 // กราฟย้อนหลัง: เก็บไว้ในเบราว์เซอร์ (ลดจำนวนครั้งที่เรียก ThaiWater) · เรียกทีละรายการเว้น 0.4 วิ · ถ้าดึงไม่ได้ใช้ของเก่าที่เก็บไว้
 let graphQ=Promise.resolve();
@@ -771,9 +777,11 @@ function ymd(d){return new Date(d.getTime()+7*3600e3).toISOString().slice(0,10)}
 async function loadWorst(){
   const W=CONFIG.worst,to=ymd(new Date(Date.now()+86400e3));
   const res=await Promise.all(W.stations.map(async s=>{
-    let j;try{j=await getGraph('tele_waterlevel',s.id,W.baseFrom,to)}catch(e){console.warn('worst',s.code,e);return {...s}} // สถานีใดดึงไม่ได้ ไม่ให้ทั้งการ์ดพัง
+    // ดึงกราฟไม่ได้ → ใช้ระดับปกติ/จุดสูงสุดวันแย่สุดที่บันทึกไว้ (fb) กับค่าปัจจุบันจากตารางระดับน้ำ (ไม่มีเส้นกราฟ)
+    const fbOnly=()=>s.fb?{...s,base:s.fb.base,peak:s.fb.peak,peakT:parseTH(s.fb.peakT),fbOnly:true}:{...s};
+    let j;try{j=await getGraph('tele_waterlevel',s.id,W.baseFrom,to)}catch(e){console.warn('worst',s.code,e);return fbOnly()} // สถานีใดดึงไม่ได้ ไม่ให้ทั้งการ์ดพัง
     const a=(j.data?.graph_data||[]).filter(x=>x.value!=null&&!isNaN(x.value));
-    if(!a.length)return {...s};
+    if(!a.length)return fbOnly();
     const base=a.filter(x=>x.datetime>=W.baseFrom&&x.datetime<W.baseTo+' 23:59').reduce((m,x)=>Math.min(m,x.value),Infinity);
     let peak=null;for(const x of a)if(x.datetime>=W.from&&(!peak||x.value>peak.value))peak=x;
     const last=a[a.length-1];
@@ -790,11 +798,12 @@ function renderWorst(){
   // สถานี สสน. BKK001 ค้าง → ใช้ค่าล่าสุดของ กทม. (WL.SST.01 ปตร.คลองสองสายใต้ ฝั่งใน จุดเดียวกัน) แทน
   const fr=t=>t&&(Date.now()-t)<STALE_H*3600e3;
   const sst=(state.bma?.canals||[]).find(c=>c.code==='WL.SST.01'&&c.wl!=null&&fr(c.time));
-  const list=(state.worst||[]).map(s=>{if(!s.alt||!sst||sst.code!==s.alt.code||(s.pct!=null&&fr(s.nowT)))return s;
+  const filled=(state.worst||[]).map(s=>{if(!s.fbOnly)return s;const c=(state.canals||[]).find(x=>x.code===s.code);if(!c||c.wl==null||isNaN(c.wl))return s;return {...s,now:c.wl,nowT:c.time,pct:(c.wl-s.base)/(s.peak-s.base)}});
+  const list=filled.map(s=>{if(!s.alt||!sst||sst.code!==s.alt.code||(s.pct!=null&&fr(s.nowT)))return s;
     if(s.pct==null){const pct=(sst.wl-s.alt.base)/(s.alt.peak-s.alt.base);return {...s,now:sst.wl,nowT:sst.time,pct,peak:s.alt.peak,peakT:parseTH(s.alt.peakT),src:state.bma.src}} // ดึงประวัติ สสน. ไม่ได้
     // เทียบค่า กทม. กับฐานและจุดสูงสุดของเซนเซอร์ กทม. เอง แล้วแปลงกลับเป็นสเกลของสถานี สสน. เพื่อวาดต่อในกราฟ
-    const pct=(sst.wl-s.altBase)/(s.altPeak-s.altBase);const dt=sst.time.toLocaleString('sv-SE',{timeZone:'Asia/Bangkok'}).slice(0,16);
-    return {...s,now:sst.wl,nowT:sst.time,pct,peak2:s.altPeak,peakT2:s.altPeakT,src:state.bma.src,series:[...(s.series||[]),{datetime:dt,value:s.base+pct*(s.peak-s.base),gap:true}]}});
+    const pct=(sst.wl-s.alt.base)/(s.alt.peak-s.alt.base);const dt=sst.time.toLocaleString('sv-SE',{timeZone:'Asia/Bangkok'}).slice(0,16);
+    return {...s,now:sst.wl,nowT:sst.time,pct,peak2:s.alt.peak,peakT2:parseTH(s.alt.peakT),src:state.bma.src,series:[...(s.series||[]),{datetime:dt,value:s.base+pct*(s.peak-s.base),gap:true}]}});
   for(const s of list){if(s.pct==null)continue;rows.push({label:s.label+(s.src?` · ค่าล่าสุดจากเซนเซอร์ ${s.src}`:''),now:`${fmt(s.now,2)} ม.`,worst:`${fmt(s.peak2??s.peak,2)} ม. · ${(s.peakT2??s.peakT).toLocaleDateString('th-TH',{day:'numeric',month:'short'})}`,p:Math.max(0,s.pct),w:s.w,stale:s.nowT&&(Date.now()-s.nowT)>STALE_H*3600e3})}
   const near=(state.bma?.roads||[]).filter(r=>r.d<=2.5&&r.time&&(Date.now()-r.time)<STALE_H*3600e3);
   if(near.length){const mx=Math.max(...near.map(r=>r.v||0));rows.push({label:W.road.label,now:`${fmt(mx)} ซม.`,worst:`${W.road.worstCm} ซม. · 26–29 ก.ย.`,p:mx/W.road.worstCm,w:W.road.w})}
@@ -810,7 +819,7 @@ function renderWorst(){
   $('wTable').innerHTML='<thead><tr><th>ตัวชี้วัด</th><th class="r">ตอนนี้</th><th class="r">วันแย่สุด</th><th>เทียบ</th></tr></thead><tbody>'+
     rows.map(r=>`<tr><td>${esc(r.label)}${r.stale?'<div class="stale">ข้อมูลค้าง</div>':''}</td><td class="r">${r.now}</td><td class="r">${r.worst}</td><td style="white-space:nowrap">${r.p==null?'<span class="note">–</span>':pctBar(r.p,pctCol(r.p))+'<span class="num" style="font-size:13px">'+Math.round(r.p*100)+'%</span>'}</td></tr>`).join('')+'</tbody>';
   // chart: % ของวันแย่สุดของทุกคลอง
-  const g=$('wChart');g.innerHTML='';const L=list.filter(x=>x.series&&x.series.length&&x.peak>x.base);if(!L.length)return;
+  const g=$('wChart');g.innerHTML='';const L=list.filter(x=>x.series&&x.series.length&&x.peak>x.base);if(!L.length){$('wLegend').innerHTML='<span class="note">ดึงกราฟย้อนหลังจาก ThaiWater ไม่ได้ตอนนี้ (ถูกจำกัดการเรียก) · ตัวเลขด้านบนยังคำนวณจากค่าปัจจุบันเทียบจุดสูงสุดที่บันทึกไว้</span>';return}
   const t0=Math.min(...L.map(x=>parseTH(x.series[0].datetime).getTime())),t1=Date.now();
   const X=t=>44+(626-44)*(t-t0)/(t1-t0),Y=v=>190-170*Math.max(-.1,Math.min(1.15,v))/1.15;
   [0,.5,1].forEach(v=>{el(g,'line',{x1:44,x2:626,y1:Y(v),y2:Y(v),stroke:v===1?css('--clay'):css('--rule'),'stroke-dasharray':v===1?'':'3 4','stroke-width':v===1?1.4:1});el(g,'text',{x:40,y:Y(v)+4,'text-anchor':'end','font-size':11,fill:v===1?css('--clay'):css('--ink2')},Math.round(v*100)+'%')});
@@ -989,12 +998,14 @@ async function refresh(){
   $('updated').innerHTML=`อัปเดต ${hhmm(new Date())} น.`+(state.twMirror?' · ThaiWater จำกัดการเรียก ใช้สำเนาจาก faonam.com':'')+(state.graphStale?' · กราฟย้อนหลังใช้ข้อมูลที่เก็บไว้':'')+(errs.length?` · <span class="err">โหลดไม่ได้: ${errs.join(', ')}</span>`:'');
   $('refresh').disabled=false;
 }
-$('refresh').addEventListener('click',refresh);
+$('refresh').addEventListener('click',()=>{lastRefresh=Date.now();refresh()});
 $('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';renderCanals();renderRiver();renderRain();renderRadarStats();renderCloud();try{renderNowcast()}catch(e){};renderWorst();renderHouse()});
 floorCm();
 function setCfgNote(){$('cfgNote').textContent=state.bma?('ข้อมูล '+state.bma.src):'ยังไม่มีข้อมูล กทม. (ดู README: GitHub Actions หรือ Cloudflare Worker)';}
 setCfgNote();
-initMap();refresh();setInterval(refresh,CONFIG.refreshMinutes*60000);
+// รีเฟรชอัตโนมัติเฉพาะตอนเปิดดูหน้านี้อยู่ (แท็บซ่อนอยู่ = ไม่ดึงข้อมูล) · กลับมาดูหลังครบรอบ = ดึงใหม่ทันที
+let lastRefresh=0;const autoRefresh=()=>{if(document.hidden)return;if(Date.now()-lastRefresh<CONFIG.refreshMinutes*60000-5000)return;lastRefresh=Date.now();refresh()};
+initMap();lastRefresh=Date.now();refresh();setInterval(autoRefresh,60000);document.addEventListener('visibilitychange',autoRefresh);
 
 /* ---------- Facebook tabs ---------- */
 // ปลั๊กอินของ Facebook รับความกว้าง 180–500 px และไม่ยืดตามจอเอง จึงคำนวณจากกรอบจริงทุกครั้ง
