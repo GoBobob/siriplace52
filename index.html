@@ -42,6 +42,8 @@ button:focus-visible{outline:2px solid var(--water);outline-offset:2px}
 .updated{font-size:13px;color:var(--ink2)}
 .grid{display:grid;gap:16px;margin-top:20px}
 @media(min-width:900px){.g2{grid-template-columns:1.25fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+.hscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.halo{paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
 .card{background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);padding:18px 20px;min-width:0}
 .card h2{margin:0 0 4px;font-size:20px;font-weight:700}
 .card .hint{font-size:13px;color:var(--ink2);margin-bottom:12px}
@@ -58,6 +60,11 @@ button:focus-visible{outline:2px solid var(--water);outline-offset:2px}
 .dot{width:12px;height:12px;border-radius:50%;display:inline-block;transform:translateY(1px)}
 .d0{background:var(--green)}.d1{background:var(--ochre)}.d2{background:var(--clay)}.d3{background:var(--clay);box-shadow:0 0 0 3px var(--clay-bg)}.dn{background:var(--rule)}
 .pts{font-family:"Chakra Petch";font-size:13px;color:var(--ink2);white-space:nowrap}
+h3.sub3{font-size:14px;font-weight:600;margin:18px 0 6px}
+.nc{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:8px 0 4px;text-align:center}
+.ncb{height:46px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;display:flex;align-items:flex-end;overflow:hidden}
+.ncb i{display:block;width:100%}
+.nc .l{font-size:11.5px;color:var(--ink2);margin-top:3px}.nc .v{font-size:12.5px;font-family:'Chakra Petch',sans-serif;font-weight:700}
 #map{height:380px;border-radius:12px;border:1px solid var(--rule);z-index:0}
 .radarbar{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap;font-size:14px}
 .radarbar input{flex:1;min-width:140px}
@@ -109,7 +116,7 @@ a{color:var(--water)}
 .house-main{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
 .gaugewrap{position:relative;width:200px;height:120px}
 .dialnum{position:absolute;left:0;right:0;bottom:2px;display:flex;flex-direction:column;align-items:center}
-.dialnum .num{font-size:40px;font-weight:700;line-height:1}
+.dialnum .num{font-size:40px;font-weight:700;line-height:1.05;margin-bottom:3px}
 .dialnum .l{font-size:12.5px;color:var(--ink2)}
 .lvtext{font-size:15px;font-weight:500;min-height:44px}
 .floor{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--ink2);margin-top:6px}
@@ -140,18 +147,6 @@ a{color:var(--water)}
   </div>
 </header>
 
-<!-- RISK -->
-<section class="card" style="margin-top:20px" aria-labelledby="h-risk">
-  <h2 id="h-risk">ประเมินความเสี่ยงตอนนี้</h2>
-  <div class="hint">ให้คะแนนเฉพาะสิ่งที่มีผลกับโครงการจริง: คลอง 4 จุดบนเส้นทางน้ำ ถนน ฝน 3 ตัว และผลของแม่น้ำต่อการสูบระบาย · เกณฑ์อยู่ด้านล่างสุดของหน้า</div>
-  <div class="risk">
-    <div class="risk-level lv0" id="riskBox">
-      <div class="lv" id="riskLevel">…</div>
-      <div id="riskText" style="font-size:15px">กำลังประมวลผล</div>
-    </div>
-    <ul class="reasons" id="reasons"><li class="skeleton">กำลังโหลด…</li></ul>
-  </div>
-</section>
 
 <!-- WORST -->
 <section class="card" style="margin-top:16px" aria-labelledby="h-worst">
@@ -168,14 +163,14 @@ a{color:var(--water)}
       <table id="wTable"><tbody><tr><td class="skeleton">กำลังโหลด…</td></tr></tbody></table>
     </div>
   </div>
-  <div style="margin-top:14px;font-size:14px;font-weight:600">คลองบนเส้นทางน้ำเข้าโครงการ 3 จุด เทียบวันแย่สุด ตั้งแต่ 20 ก.ย. (100% = จุดสูงสุดของแต่ละคลอง)</div>
+  <div style="margin-top:14px;font-size:14px;font-weight:600">คลองบนเส้นทางน้ำเข้าโครงการ 4 จุด เทียบวันแย่สุด ตั้งแต่ 20 ก.ย. (100% = จุดสูงสุดของแต่ละคลอง)</div>
   <div id="wLegend" style="display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;margin-top:6px"></div>
-  <svg id="wChart" width="100%" height="230" viewBox="0 0 640 230" aria-label="กราฟระดับคลองรอบโครงการเทียบวันแย่สุด"></svg>
+  <div class="hscroll"><svg id="wChart" style="width:100%;min-width:540px;display:block;height:auto" viewBox="0 0 640 230" aria-label="กราฟระดับคลองรอบโครงการเทียบวันแย่สุด"></svg></div>
   <details style="margin-top:6px"><summary>วันแย่สุดเกิดอะไรขึ้นรอบโครงการ</summary>
     <ul class="note" style="padding-left:18px;margin:8px 0 0" id="worstFacts">
-      <li>26 ก.ย. 19:00 น.: คลองลาดพร้าว ท้าย ปตร.คลอง 2 (สายไหม) ขึ้นสูงสุด 1.83 ม.รทก. (ปกติราว 0.5 ม.) เหลือ 73 ซม. ก่อนล้น</li>
+      <li>26 ก.ย. 19:00 น.: คลองสอง ฝั่งในประตูระบายน้ำคลองสองสายใต้ (ฝั่งหมู่บ้าน) ขึ้นสูงสุด 1.83 ม.รทก. (ปกติราว 0.5 ม.) เหลือ 73 ซม. ก่อนล้น</li>
       <li>25 ก.ย.: คลองหกวาที่ลำลูกกาขึ้นถึง 2.65 ม. ห่างตลิ่งเพียง 5 ซม.</li>
-      <li>28 ก.ย.: คลองลาดพร้าว ปากคลอง 2 สายใต้ (เหนือ ปตร.คลอง 2) ล้นตลิ่ง 22 ซม. ปภ. เตือนน้ำล้นแนวคัน 29 ก.ย.</li>
+      <li>28 ก.ย.: คลองหกวาสายล่าง นอกประตูระบายน้ำคลองสองสายใต้ (ริมสายไหม) ล้นตลิ่ง 22 ซม. แต่ประตูกั้นไว้ได้ ปภ. เตือนน้ำล้นแนวคัน 29 ก.ย.</li>
       <li>ฝนหนักสุดในสายไหม 85 มม. ใน 24 ชม. (ปตร.พระยาสุเรนทร์ 26–27 ก.ย.) · ฝนสะสม 3 วันฝั่งตะวันออก กทม. ~350 มม.</li>
       <li>ถนนรอบโครงการ (ถ.วัชรพล ซ.8, ถ.เทพรักษ์) น้ำขัง ~20 ซม. · ชุมชนเอื้ออาทรคลองถนน (~800 ม.) 30–80 ซม.</li>
       <li>ข้อมูลปี 2566 มีค่า 4.12 ม. ซึ่งเป็นค่าผิดพลาดของเซนเซอร์ (สูงกว่าตลิ่ง 1.5 ม. แต่ไม่มีรายงานน้ำท่วม) จึงไม่นำมาใช้</li>
@@ -221,7 +216,7 @@ a{color:var(--water)}
 <div class="grid g2">
   <!-- RADAR -->
   <section class="card" aria-labelledby="h-radar">
-    <h2 id="h-radar">เรดาร์ฝน 2 ชั่วโมงล่าสุด</h2>
+    <h2 id="h-radar">เรดาร์ฝน · ย้อนหลัง 2 ชม. และคาดการณ์</h2>
     <div class="hint">วงใน 5 กม. · วงนอก 15 กม. · ข้อมูล RainViewer</div>
     <div id="map" role="img" aria-label="แผนที่เรดาร์ฝนรอบโครงการ"></div>
     <div class="radarbar">
@@ -234,8 +229,13 @@ a{color:var(--water)}
       <div class="stat"><div class="l">ฝนในรัศมี 15 กม.</div><div class="v" id="r15">–</div></div>
       <div class="stat"><div class="l">แนวโน้ม (30 นาที)</div><div class="v" id="rTrend" style="font-size:18px">–</div></div>
     </div>
-    <svg id="radarSpark" width="100%" height="70" viewBox="0 0 500 70" preserveAspectRatio="none" style="margin-top:10px" aria-label="กราฟพื้นที่ฝนในรัศมี 15 กม. ตามเวลา"></svg>
+    <svg id="radarSpark" width="100%" viewBox="0 0 500 70" style="margin-top:10px;display:block" aria-label="กราฟพื้นที่ฝนในรัศมี 15 กม. ตามเวลา"></svg>
     <div class="note" id="radarNote"></div>
+    <h3 class="sub3">คาดการณ์จากเรดาร์ · 1 ชั่วโมงข้างหน้า</h3>
+    <div id="nowcast"><div class="skeleton">กำลังคำนวณ…</div></div>
+    <h3 class="sub3">ฝนและเมฆ · 12 ชั่วโมงข้างหน้า</h3>
+    <div class="hscroll"><svg id="cloudStrip" style="width:100%;min-width:480px;display:block;height:auto" viewBox="0 0 520 200" aria-label="เมฆและโอกาสฝนรายชั่วโมง 12 ชั่วโมงข้างหน้า"></svg></div>
+    <div class="note" id="cloudNote"></div>
   </section>
 
   <!-- RAIN -->
@@ -255,42 +255,36 @@ a{color:var(--water)}
       <div class="stat"><div class="l">สถิติวันแย่สุด (24 ชม.)</div><div class="v">85 มม.</div><div class="l">สายไหม 26–27 ก.ย. 69 · ทั้ง กทม. สูงสุด 210 มม.</div></div>
     </div>
     <div style="margin-top:14px;font-size:14px;font-weight:500">คาดการณ์รายวัน 14 วัน</div>
-    <svg id="daily" width="100%" height="190" viewBox="0 0 520 190" aria-label="กราฟฝนรายวัน 14 วัน"></svg>
-    <div class="note">แท่ง = ปริมาณฝนเฉลี่ยของพื้นที่ (มม.) · ตัวเลขบน = โอกาสฝนตกสูงสุด · พยากรณ์ฝนฟ้าคะนองเกิน 3–5 วันมีความไม่แน่นอนสูง และฝนเฉพาะจุดอาจหนักกว่าค่าเฉลี่ยมาก</div>
+    <div class="hscroll"><svg id="daily" style="width:100%;min-width:480px;display:block;height:auto" viewBox="0 0 520 236" aria-label="โอกาสฝนตกและปริมาณฝนรายวัน 14 วัน"></svg></div>
+    <div class="note">แถวบน = โอกาสที่ฝนจะตกในวันนั้น (สีเข้ม = โอกาสสูง) · แถวล่าง = ปริมาณฝนที่คาดทั้งวัน เฉลี่ยทั้งพื้นที่ (สีส้ม ≥ 10 มม. ฝนปานกลาง, สีอิฐ ≥ 35 มม. ฝนหนัก) · พยากรณ์ฝนฟ้าคะนองเกิน 3–5 วันมีความไม่แน่นอนสูง และฝนเฉพาะจุดอาจหนักกว่าค่าเฉลี่ยมาก</div>
     <details><summary>สถานีวัดฝนใกล้โครงการ</summary><table id="rainTable"><tbody><tr><td class="skeleton">กำลังโหลด…</td></tr></tbody></table></details>
   </section>
 </div>
 
-<div class="grid g2">
+<div class="grid">
   <!-- CANALS -->
   <section class="card" aria-labelledby="h-canal">
     <h2 id="h-canal">ระดับน้ำในคลอง · เหลือก่อนล้นตลิ่ง</h2>
-    <div class="hint">ThaiWater (สสน.) และสำนักการระบายน้ำ กทม. (ต้องตั้งค่าตัวกลาง)</div>
-    <svg id="gauges" width="100%" height="230" viewBox="0 0 520 230" aria-label="หลอดระดับน้ำในคลอง"></svg>
+    <div class="hint">ThaiWater (สสน.) · สถานีที่ข้อมูลค้างเกิน 6 ชม. จะแสดงจางและบอกเวลาล่าสุด</div>
+    <div class="hscroll"><svg id="gauges" style="width:100%;min-width:460px;display:block;height:auto" viewBox="0 0 520 250" aria-label="หลอดระดับน้ำในคลอง"></svg></div>
     <table id="canalTable"><tbody><tr><td class="skeleton">กำลังโหลด…</td></tr></tbody></table>
   </section>
 
-  <!-- ROADS -->
-  <section class="card" aria-labelledby="h-road">
-    <h2 id="h-road">น้ำบนถนนรอบโครงการ (≤ 4 กม.)</h2>
-    <div class="hint" id="roadSrc">เซนเซอร์ กทม.</div>
-    <table id="roadTable"><tbody><tr><td class="skeleton">กำลังโหลด…</td></tr></tbody></table>
-  </section>
 </div>
 
 <div class="grid g2">
   <!-- UPSTREAM -->
   <section class="card" aria-labelledby="h-up">
     <h2 id="h-up">แม่น้ำเจ้าพระยา · นครสวรรค์ถึงปากอ่าว</h2>
-    <div class="hint">ระดับน้ำเทียบตลิ่ง ไล่จากเหนือลงใต้ · แท่งไปทางขวา (สีส้มแดง) = ล้นตลิ่ง · แท่งไปทางซ้าย (สีฟ้า) = ยังต่ำกว่าตลิ่ง · ที่มีผลกับหมู่บ้านคือสามเสน (ไฮไลต์)</div>
-    <div id="river" role="list" aria-label="ระดับน้ำแม่น้ำเจ้าพระยาเทียบตลิ่ง จากเหนือลงทะเล"></div>
-    <div class="note" id="riverNote"></div>
+    <div class="hint">ระดับน้ำเทียบตลิ่ง ซ้ายไปขวา = เหนือลงใต้ · แท่งขึ้น (ส้มแดง) = ล้นตลิ่ง · แท่งลง (ฟ้า) = ยังต่ำกว่าตลิ่ง · ที่มีผลกับหมู่บ้านคือสามเสน (ไฮไลต์) · ลูกศร = แนวโน้มจากค่าก่อนหน้า</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><svg id="river" viewBox="0 0 640 312" style="width:100%;min-width:520px;display:block" role="img" aria-label="ระดับน้ำแม่น้ำเจ้าพระยาเทียบตลิ่ง จากเหนือลงทะเล"></svg></div><div id="riverFoot" class="rv-st" style="padding-top:4px"></div>
+    <div class="note" id="riverNote" style="margin-top:8px"></div>
   </section>
 
   <!-- WARNINGS -->
   <section class="card" aria-labelledby="h-warn">
     <h2 id="h-warn">คำเตือนล่าสุด</h2>
-    <div class="hint">ระบบเตือนภัยอัตโนมัติของ ThaiWater (สสน.) ทั่วประเทศ · พื้นที่ใกล้บ้าน (กทม. ปทุมธานี นนทบุรี) ขึ้นก่อนและไฮไลต์</div>
+    <div class="hint">ระบบเตือนภัยอัตโนมัติของ ThaiWater (สสน.) · แสดงเฉพาะในโซน กทม. ปทุมธานี นนทบุรี พร้อมวันเวลา</div>
     <div id="warnSum" class="note" style="margin-bottom:6px"></div>
     <div id="warnList" style="max-height:460px;overflow:auto;border-top:1px solid var(--rule)"><div class="skeleton">กำลังโหลด…</div></div>
     <div style="margin-top:16px;font-size:14px;font-weight:500">ลิงก์ทางการ</div>
@@ -311,53 +305,7 @@ a{color:var(--water)}
   </section>
 </div>
 
-<!-- RIVER MODEL -->
-<section class="card" style="margin-top:16px" aria-labelledby="h-rm">
-  <h2 id="h-rm">แบบจำลองน้ำเหนือ · ถ้าเขื่อนเจ้าพระยาปล่อยน้ำเพิ่ม จะเป็นอย่างไร</h2>
-  <div class="hint" id="rmHint">เรียนรู้ความสัมพันธ์ระหว่างน้ำที่เขื่อนเจ้าพระยาปล่อย กับระดับแม่น้ำที่สามเสน จากข้อมูล 90 วันล่าสุด</div>
-  <div class="rmgrid">
-    <div>
-      <label for="rmQ" style="font-size:14px;font-weight:500">เขื่อนเจ้าพระยาปล่อยน้ำ (C.13)</label>
-      <div style="display:flex;align-items:center;gap:10px;margin-top:6px"><input type="range" id="rmQ" min="1000" max="4000" step="100" value="2500" style="flex:1" aria-describedby="rmQv"><span class="num" id="rmQv" style="font-size:20px;font-weight:700;min-width:120px;text-align:right">–</span></div>
-      <div class="note" id="rmNow" style="margin-top:2px"></div>
-      <div class="stats">
-        <div class="stat"><div class="l">ระดับสูงสุดที่สามเสน (คาด)</div><div class="v" id="rmH">–</div><div class="l" id="rmHr"></div></div>
-        <div class="stat"><div class="l">ชุมชนริมแม่น้ำ / คันกั้นน้ำ</div><div class="v" id="rmStat" style="font-size:18px">–</div></div>
-        <div class="stat"><div class="l">กำลังระบายน้ำของสายไหม</div><div class="v" id="rmFac">–</div><div class="l">เทียบปกติ</div></div>
-        <div class="stat"><div class="l">โอกาสน้ำเข้าบ้าน (สถานการณ์นี้)</div><div class="v" id="rmHouse">–</div><div class="l" id="rmHouseNow"></div></div>
-      </div>
-    </div>
-    <div>
-      <svg id="rmChart" width="100%" height="230" viewBox="0 0 560 230" aria-label="ระดับแม่น้ำเจ้าพระยาที่สามเสน ข้อมูลจริงและคาดการณ์"></svg>
-      <div class="note" id="rmEast"></div>
-    </div>
-  </div>
-  <details style="margin-top:10px"><summary>แบบจำลองน้ำเหนือคำนวณอย่างไร</summary>
-    <ul class="note" style="padding-left:18px;margin:8px 0 0" id="rmMethod">
-      <li>ดึงปริมาณน้ำที่เขื่อนเจ้าพระยา (C.13) และระดับสูงสุดรายวันที่สามเสน (C.12) ย้อนหลัง 90 วันจาก ThaiWater แล้วหาเวลาเดินทางของน้ำ (0–4 วัน) ที่ให้ความสัมพันธ์ดีที่สุด จากนั้นหาเส้นตรง ระดับ = a + b × ปริมาณน้ำ</li>
-      <li>ช่วงคาดการณ์ ± คือส่วนเบี่ยงเบนของค่าที่คาดผิดในอดีต ส่วนใหญ่มาจากน้ำทะเลหนุนซึ่งแบบจำลองนี้ไม่ได้รวม</li>
-      <li>น้ำเหนือไม่ไหลเข้าสายไหมโดยตรง แต่ กทม. ต้องสูบน้ำจากคลองลงแม่น้ำ เมื่อแม่น้ำสูง การระบายจะช้าลง: สมมติให้กำลังระบายลดลงเป็นเส้นตรงจาก 100% ที่ระดับ 2.0 ม. เหลือ 65% ที่ 3.0 ม. แล้วคำนวณโอกาสน้ำเข้าบ้านใหม่ด้วยฝนพยากรณ์ชุดเดียวกัน</li>
-      <li>คันกั้นน้ำริมเจ้าพระยาในกรุงเทพฯ สูงราว 2.8–3.0 ม.รทก. (ตามข่าว กทม.) ชุมชนนอกคันจะท่วมก่อนเมื่อระดับเกินตลิ่ง</li>
-      <li>เส้นทางตะวันออก (ป่าสัก → คลองระพีพัฒน์ → ทุ่งรังสิต → คลองหกวา) ยังไม่มีข้อมูลพอสร้างแบบจำลอง จึงแสดงเป็นแนวโน้มจากข้อมูลจริง</li>
-    </ul>
-  </details>
-</section>
 
-<details>
-  <summary>วิธีคำนวณความเสี่ยง</summary>
-  <table style="margin-top:10px">
-    <thead><tr><th>ตัวชี้วัด</th><th class="r">0</th><th class="r">1</th><th class="r">2</th><th class="r">3</th></tr></thead>
-    <tbody>
-      <tr><td>คลองที่น้ำไหลถึงโครงการได้จริง เหลือก่อนล้นตลิ่ง (ซม.): คลองสอง (กทม.), ลาดพร้าว ท้าย ปตร.คลอง 2, หกวา ลำลูกกา, ระพีพัฒน์ใต้</td><td class="r">&gt; 60</td><td class="r">30–60</td><td class="r">10–30</td><td class="r">&lt; 10</td></tr>
-      <tr><td>น้ำบนถนนสูงสุดในรัศมี 4 กม. (ซม.)</td><td class="r">0</td><td class="r">1–15</td><td class="r">16–30</td><td class="r">&gt; 30</td></tr>
-      <tr><td>ฝนวัดได้ 24 ชม. สถานีใกล้สุด 3 แห่ง เฉลี่ยถ่วงระยะ (มม.)</td><td class="r">&lt; 35</td><td class="r">35–90</td><td class="r">&gt; 90</td><td class="r">–</td></tr>
-      <tr><td>ฝนคาดการณ์ 48 ชม. (มม.)</td><td class="r">&lt; 20</td><td class="r">20–50</td><td class="r">50–100</td><td class="r">&gt; 100</td></tr>
-      <tr><td>เรดาร์: พื้นที่มีฝนในรัศมี 5 กม. ภาพล่าสุด</td><td class="r">&lt; 10%</td><td class="r">10–50%</td><td class="r">&gt; 50%</td><td class="r">–</td></tr>
-      <tr><td>แม่น้ำเจ้าพระยา: กำลังสูบน้ำออกที่เหลือ เมื่อสามเสนสูงขึ้น (จากแบบจำลองน้ำเหนือ)</td><td class="r">≥ 90%</td><td class="r">80–90%</td><td class="r">70–80%</td><td class="r">&lt; 70%</td></tr>
-    </tbody>
-  </table>
-  <p class="note">ระดับรวมคิดจากสัดส่วนคะแนน (คะแนนรวม ÷ คะแนนเต็มของตัวชี้วัดที่มีข้อมูล): ปกติ (&lt; 20% และไม่มีตัวใดถึง 2 — สัญญาณอ่อนๆ 1 คะแนนกระจายกันหลายตัวยังถือว่าปกติ) · เฝ้าระวัง (≥ 20% หรือมีตัวใดถึง 2) · เตรียมพร้อม (≥ 30% หรือมีตัวใดถึง 3) · อันตราย (≥ 50% หรือมี 2 ตัวขึ้นไปถึง 3) · ตัวชี้วัดที่ไม่มีข้อมูลปัจจุบันจะไม่ถูกนับ — เกณฑ์ฝนอ้างอิงนิยามกรมอุตุฯ (หนัก 35.1–90 มม., หนักมาก &gt; 90 มม.) ส่วนเกณฑ์อื่นตั้งขึ้นสำหรับหน้านี้ ไม่ใช่เกณฑ์ทางราชการ</p>
-</details>
 
 <footer>
   ข้อมูล: <a href="https://www.thaiwater.net" target="_blank" rel="noopener">ThaiWater / สสน.</a> ·
@@ -379,11 +327,14 @@ const CONFIG = {
   // ตัวกลาง (CORS proxy) สำหรับข้อมูล กทม. เช่น 'https://your-worker.workers.dev/' — เว้นว่างได้
   // ข้อมูล กทม.: 'auto' = อ่านจากโฟลเดอร์ bma/ ข้างหน้าเว็บ (GitHub Actions อัปเดตให้) · หรือใส่ลิงก์ Cloudflare Worker · '' = ปิด
   bmaProxy: 'auto',
+  // สำรอง: ข้อมูล กทม. ที่เว็บเฝ้าน้ำ (faonam.com) ดึงมาเปิดให้ใช้ (อัปเดตทุก ~5 นาที) ใช้เมื่อแหล่งด้านบนไม่มี/ค้าง · '' = ปิด
+  bmaMirror: 'https://faonam.com/api/bma/',
   thaiwater: 'https://api-v3.thaiwater.net/api/v1/thaiwater30/',
   refreshMinutes: 10,
   // สถานี ThaiWater ที่ใช้
   canals: [
-    {code:'BKK001', label:'คลองลาดพร้าว ท้าย ปตร.คลอง 2 (สายไหม 4 กม.)', short:'ท้าย ปตร.คลอง 2'},
+    {code:'BKK020', label:'คลองหกวาสายล่าง นอกประตูคลองสองสายใต้ (ริมสายไหม 5 กม.)', short:'หกวาสายล่าง (นอกประตู)', gateInside:'BKK001'},
+    {code:'BKK001', label:'คลองสอง ในประตูคลองสองสายใต้ (ฝั่งหมู่บ้าน 4 กม.)', short:'คลองสอง (ในประตู)'},
     {code:'BKK015', label:'คลองหกวา ลำลูกกา คลอง 8 (15 กม.)', short:'หกวา ลำลูกกา'},
     {code:'BKK013', label:'คลองระพีพัฒน์แยกใต้ หนองเสือ (ต้นน้ำตะวันออก)', short:'ระพีพัฒน์ใต้'},
   ],
@@ -391,21 +342,21 @@ const CONFIG = {
   bmaCanals: [
     {code:'WL.KSG.01', label:'คลองสอง ช่วงถนนพหลโยธิน', short:'คลองสอง', bank:2.00, key:true},
     {code:'WL.LOA.01', label:'คลองรางอ้อ-รางแก้ว', short:'รางอ้อ', bank:1.50},
-    {code:'WL.SST.01', label:'ปตร.คลองสองสายใต้ (ฝั่ง กทม.)', short:'ปตร.คลองสอง', bank:1.98},
+    {code:'WL.SST.01', label:'คลองสอง ในประตูคลองสองสายใต้ (กทม. · จุดเดียวกับสถานี สสน.)', short:'ปตร.คลองสอง (ใน)', bank:1.98},
   ],
   // แม่น้ำเจ้าพระยา ไล่จากเหนือลงทะเล (ชื่อสถานีตาม ThaiWater · ชป. = กรมชลประทาน, สสน. = สถาบันสารสนเทศทรัพยากรน้ำ)
   river: [
-    {code:'C.2',    prov:'นครสวรรค์',       label:'ค่ายจิรประวัติ (ปากน้ำโพ)'},
-    {code:'C.13',   prov:'ชัยนาท',          label:'ท้ายเขื่อนเจ้าพระยา'},
-    {code:'C.3',    prov:'สิงห์บุรี',        label:'บ้านบางพุทรา'},
-    {code:'C.7A',   prov:'อ่างทอง',         label:'บ้านบางแก้ว'},
-    {code:'C.35',   prov:'พระนครศรีอยุธยา', label:'บ้านป้อม'},
-    {code:'CPY012', prov:'พระนครศรีอยุธยา', label:'บางปะอิน'},
-    {code:null,     prov:'ปทุมธานี',        label:'ไม่มีสถานีอัตโนมัติบนแม่น้ำในระบบ ThaiWater'},
-    {code:'CPY014', prov:'นนทบุรี',         label:'สะพานนวลฉวี'},
-    {code:'C.12',   prov:'กรุงเทพฯ',        label:'สามเสน · จุดที่ กทม. สูบน้ำออก', key:true},
-    {code:'CPY015', prov:'กรุงเทพฯ',        label:'สะพานกรุงเทพ'},
-    {code:'BKC003', prov:'สมุทรปราการ',     label:'ปตร.คลองลัดบางยอ 1 (พระประแดง)'},
+    {short:'นครสวรรค์', code:'C.2',    prov:'นครสวรรค์',       label:'ค่ายจิรประวัติ (ปากน้ำโพ)'},
+    {short:'ชัยนาท', code:'C.13',   prov:'ชัยนาท',          label:'ท้ายเขื่อนเจ้าพระยา'},
+    {short:'สิงห์บุรี', code:'C.3',    prov:'สิงห์บุรี',        label:'บ้านบางพุทรา'},
+    {short:'อ่างทอง', code:'C.7A',   prov:'อ่างทอง',         label:'บ้านบางแก้ว'},
+    {short:'อยุธยา', code:'C.35',   prov:'พระนครศรีอยุธยา', label:'บ้านป้อม'},
+    {short:'บางปะอิน', code:'CPY012', prov:'พระนครศรีอยุธยา', label:'บางปะอิน'},
+    {short:'ปทุมธานี', code:null,     prov:'ปทุมธานี',        label:'ไม่มีสถานีอัตโนมัติบนแม่น้ำในระบบ ThaiWater'},
+    {short:'นนทบุรี', code:'CPY014', prov:'นนทบุรี',         label:'สะพานนวลฉวี'},
+    {short:'สามเสน', code:'C.12',   prov:'กรุงเทพฯ',        label:'สามเสน · จุดที่ กทม. สูบน้ำออก', key:true},
+    {short:'สะพานกรุงเทพ', code:'CPY015', prov:'กรุงเทพฯ',        label:'สะพานกรุงเทพ'},
+    {short:'พระประแดง', code:'BKC003', prov:'สมุทรปราการ',     label:'ปตร.คลองลัดบางยอ 1 (พระประแดง)'},
   ],
   rainProvinces: ['10','12','13'],
   // วันแย่สุดของโครงการ: น้ำท่วม 25–29 ก.ย. 2569 (สูงสุดตั้งแต่มีเซนเซอร์ปี 2560)
@@ -414,7 +365,8 @@ const CONFIG = {
     baseFrom: '2026-09-15', baseTo: '2026-09-24',   // ช่วงระดับปกติก่อนน้ำท่วม
     from: '2026-09-20',                               // ค้นหาจุดสูงสุดตั้งแต่วันนี้ถึงปัจจุบัน
     stations: [
-      {id:11, code:'BKK001', label:'คลองลาดพร้าว ท้าย ปตร.คลอง 2 (ใกล้บ้าน 4 กม.)', short:'ท้าย ปตร.คลอง 2', w:.35, color:'#2F72A0'},
+      {id:11, code:'BKK001', label:'คลองสอง ในประตูคลองสองสายใต้ (ฝั่งหมู่บ้าน 4 กม.)', short:'คลองสอง (ในประตู)', w:.3, color:'#2F72A0', alt:{id:61, code:'WL.SST.01', base:0.03, peak:1.57, peakT:'2026-09-26 19:00'}}, // alt = เซนเซอร์ กทม. จุดเดียวกัน (อ่านต่ำกว่า สสน. ~25 ซม.) ใช้ระดับปกติ/จุดสูงสุดวันแย่สุดของเซนเซอร์ กทม. เอง (ค่าคงที่จากประวัติ ThaiWater)
+      {id:8,  code:'BKK020', label:'คลองหกวาสายล่าง นอกประตูคลองสองสายใต้ (ริมสายไหม)', short:'หกวาสายล่าง (นอกประตู)', w:.05, color:'#B04A2B'},
       {id:37, code:'BKK015', label:'คลองหกวา ลำลูกกา (น้ำทุ่งไหลมาตามหกวา 15 กม.)', short:'หกวา ลำลูกกา', w:.1, color:'#B4761F'},
       {id:36, code:'BKK013', label:'คลองระพีพัฒน์แยกใต้ (ต้นน้ำทุ่งตะวันออก)', short:'ระพีพัฒน์ใต้', w:.1, color:'#7A5BA8'},
     ],
@@ -462,7 +414,7 @@ async function loadRainObs(){
   state.rainObs=n3.length?n3.reduce((s,x)=>s+x.v/Math.max(x.d,.5),0)/w:null;
 }
 async function loadForecast(){
-  const u=`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&hourly=precipitation,precipitation_probability&daily=precipitation_sum,precipitation_probability_max&forecast_days=14&timezone=Asia%2FBangkok`;
+  const u=`https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.lat}&longitude=${CONFIG.lon}&hourly=precipitation,precipitation_probability,cloud_cover&daily=precipitation_sum,precipitation_probability_max&forecast_days=14&timezone=Asia%2FBangkok`;
   const j=await getJSON(u);
   const now=Date.now();const h=j.hourly;let s6=0,s48=0;
   h.time.forEach((t,i)=>{const d=new Date(t+':00+07:00').getTime();if(d>=now-3600e3&&d<now+6*3600e3)s6+=h.precipitation[i]||0;if(d>=now-3600e3&&d<now+48*3600e3)s48+=h.precipitation[i]||0});
@@ -470,6 +422,27 @@ async function loadForecast(){
   // ชั่วโมงถัดไป 120 ชม. สำหรับแบบจำลองน้ำเข้าบ้าน
   state.hourly=h.time.map((t,i)=>({t:new Date(t+':00+07:00'),r:h.precipitation[i]||0,p:(h.precipitation_probability[i]??50)/100}))
     .filter(x=>x.t.getTime()>=now-3600e3).slice(0,120);
+  state.next12=h.time.map((t,i)=>({t:new Date(t+':00+07:00'),r:h.precipitation[i]||0,p:h.precipitation_probability[i],c:h.cloud_cover?.[i]}))
+    .filter(x=>x.t.getTime()>=now-3600e3).slice(0,12);
+}
+function renderCloud(){
+  const d=state.next12,s=$('cloudStrip');if(!s)return;s.innerHTML='';if(!d||!d.length){$('cloudNote').textContent='ไม่มีข้อมูลพยากรณ์';return}
+  const W=520,cw=W/d.length,top=36,ch=36,rb=172,ink2=css('--ink2');
+  const lbl=(y,t)=>el(s,'text',{x:0,y,'font-size':11.5,'font-weight':600,fill:css('--ink')},t);
+  lbl(12,'เมฆปกคลุม (%)');lbl(94,'โอกาสฝน');lbl(134,'ฝน (มม.)');
+  const rmax=Math.max(5,...d.map(x=>x.r));
+  d.forEach((x,i)=>{const cx=i*cw;const c=(x.c??0)/100;
+    el(s,'rect',{x:cx+3,y:top+ch*(1-c),width:cw-6,height:Math.max(1,ch*c),rx:3,fill:css('--rule')});
+    el(s,'text',{x:cx+cw/2,y:top+ch*(1-c)-3,'text-anchor':'middle','font-size':10,fill:ink2},x.c!=null?Math.round(x.c)+'%':'');
+    el(s,'text',{x:cx+cw/2,y:114,'text-anchor':'middle','font-size':11.5,'font-family':'Chakra Petch','font-weight':700,fill:(x.p??0)>=70?css('--clay'):(x.p??0)>=40?css('--ochre'):ink2},x.p!=null?x.p+'%':'');
+    const h=Math.min(1,x.r/rmax)*18;el(s,'rect',{x:cx+cw*.25,y:rb-h,width:cw*.5,height:Math.max(h,x.r>0?2:0),fill:css('--water')});
+    el(s,'text',{x:cx+cw/2,y:rb-Math.max(h,2)-3,'text-anchor':'middle','font-size':10,fill:x.r>0?css('--water'):css('--muted')},x.r>0?fmt(x.r,1):'–');
+    el(s,'text',{x:cx+cw/2,y:rb+16,'text-anchor':'middle','font-size':10.5,fill:css('--ink')},hhmm(x.t).slice(0,2)+'น.');
+  });
+  el(s,'line',{x1:0,x2:W,y1:rb,y2:rb,stroke:css('--rule')});
+  const sum=d.reduce((a,x)=>a+x.r,0),pk=d.reduce((m,x)=>(x.p??0)>(m.p??0)?x:m,d[0]),cAvg=d.reduce((a,x)=>a+(x.c??0),0)/d.length;
+  const sky=cAvg>=85?'เมฆครึ้มเกือบทั้งวัน':cAvg>=60?'เมฆมาก':cAvg>=30?'เมฆบางส่วน':'ท้องฟ้าค่อนข้างโปร่ง';
+  $('cloudNote').innerHTML=`<b style="color:var(--ink)">${sky}</b> (เฉลี่ย ${Math.round(cAvg)}%) · โอกาสฝนสูงสุด ${pk.p??'–'}% ช่วง ${hhmm(pk.t)} น. · ฝนรวม 12 ชม. ~${fmt(sum,1)} มม. (เฉลี่ยทั้งพื้นที่ ฝนเฉพาะจุดอาจหนักกว่านี้) · แบบจำลอง Open-Meteo`;
 }
 async function loadWarnings(){
   const j=await getJSON(CONFIG.thaiwater+'public/warning');
@@ -488,16 +461,25 @@ async function loadWarnings(){
   state.warn=items.filter(x=>x.local);state.warnAll=items.length;
 }
 async function loadBMA(){
-  if(!CONFIG.bmaProxy){state.bma=null;return}
-  const base=CONFIG.bmaProxy==='auto'?'./bma/':CONFIG.bmaProxy.replace(/\/?$/,'/');
-  let road,canal;
-  try{[road,canal]=await Promise.all([getJSON(base+'road-flood-data.json'),getJSON(base+'canal-water-data.json')])}
-  catch(e){state.bma=null;if(CONFIG.bmaProxy==='auto')return;throw e}
-  const roads=arr(road).map(x=>({name:x.name,v:+x.valueCm,lat:+x.lat,lon:+(x.lon??x.lng),time:x.observedAt?new Date(x.observedAt):null}))
-    .filter(x=>!isNaN(x.lat)).map(x=>({...x,d:distKm(CONFIG.lat,CONFIG.lon,x.lat,x.lon)})).filter(x=>x.d<=4).sort((a,b)=>a.d-b.d);
-  const cl=arr(canal);
-  const canals=CONFIG.bmaCanals.map(c=>{const x=cl.find(y=>y.code===c.code);if(!x)return {...c,src:'กทม.'};const wl=+x.levelM;return {...c,wl,gapCm:Math.round((c.bank-wl)*100),time:x.observedAt?new Date(x.observedAt):null,status:x.status,src:'กทม.'}});
-  state.bma={roads,canals};
+  const isFresh=t=>t&&(Date.now()-t)<STALE_H*3600e3;
+  const build=(road,canal,src)=>{
+    const roads=arr(road).map(x=>({name:x.name,v:+x.valueCm,lat:+x.lat,lon:+(x.lon??x.lng),time:x.observedAt?new Date(x.observedAt):null}))
+      .filter(x=>!isNaN(x.lat)).map(x=>({...x,d:distKm(CONFIG.lat,CONFIG.lon,x.lat,x.lon)})).filter(x=>x.d<=4).sort((a,b)=>a.d-b.d);
+    const cl=arr(canal);
+    const canals=CONFIG.bmaCanals.map(c=>{const x=cl.find(y=>y.code===c.code);if(!x||x.levelM==null)return {...c,src};const wl=+x.levelM;const out=x.outsideLevelM!=null&&+x.outsideLevelM>0?+x.outsideLevelM:null;
+      return {...c,wl,out,gapCm:Math.round((c.bank-wl)*100),time:x.observedAt?new Date(x.observedAt):null,status:x.status,src}});
+    return {roads,canals,src};
+  };
+  let res=null;
+  if(CONFIG.bmaProxy){const base=CONFIG.bmaProxy==='auto'?'./bma/':CONFIG.bmaProxy.replace(/\/?$/,'/');
+    try{const [road,canal]=await Promise.all([getJSON(base+'road-flood-data.json'),getJSON(base+'canal-water-data.json')]);res=build(road,canal,CONFIG.bmaProxy==='auto'?'กทม. (ไฟล์จาก GitHub Actions)':'กทม. (ผ่านตัวกลาง)')}catch(e){}}
+  // ถ้าไม่มีหรือค้าง ใช้สำเนาของ faonam.com
+  if(CONFIG.bmaMirror&&!(res&&res.canals.some(c=>isFresh(c.time)))){
+    try{const [road,canal]=await Promise.all([getJSON(CONFIG.bmaMirror+'flood_road'),getJSON(CONFIG.bmaMirror+'canal_waterlevel')]);
+      const cv=arr(canal).map(x=>({code:x.station?.canal_oldcode,levelM:x.canal_value,outsideLevelM:x.canal_out,observedAt:parseTH(x.canal_datetime)}));
+      const rv=arr(road).map(x=>({name:x.station?.floodroad_name?.th,valueCm:x.floodroad_value,lat:x.station?.floodroad_lat,lon:x.station?.floodroad_long,observedAt:parseTH(x.floodroad_datetime)}));
+      const m=build(rv,cv,'กทม. (ผ่าน faonam.com)');if(m.canals.some(c=>isFresh(c.time)))res=m}catch(e){console.warn('faonam',e)}}
+  state.bma=res;
 }
 async function loadRoadsFallback(){
   const j=await getJSON(CONFIG.thaiwater+'public/flood_road');
@@ -508,7 +490,9 @@ async function loadRoadsFallback(){
 /* ---------- Radar ---------- */
 let map,radarLayers=[],radarFrames=[],frameIdx=0,playTimer=null,ringLayers=[];
 function initMap(){
-  map=L.map('map',{zoomControl:true,attributionControl:true}).setView([CONFIG.lat,CONFIG.lon],10);
+  map=L.map('map',{zoomControl:true,attributionControl:true,zoomSnap:0.25});
+  // ค่าเริ่มต้น: เห็นทั้งกรุงเทพฯ และปริมณฑล (นนทบุรี ปทุมธานี สมุทรปราการ สมุทรสาคร นครปฐม)
+  map.fitBounds([[13.47,100.08],[14.12,100.98]]);map.setZoom(map.getZoom()-1); // ซูมออกอีก 1 ระดับ
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'© OpenStreetMap'}).addTo(map);
   L.circle([CONFIG.lat,CONFIG.lon],{radius:5000,color:'#12303C',weight:1.5,fill:false,dashArray:'4 4'}).addTo(map);
   L.circle([CONFIG.lat,CONFIG.lon],{radius:15000,color:'#12303C',weight:1,fill:false,dashArray:'2 6'}).addTo(map);
@@ -529,6 +513,10 @@ async function radarCoverage(host,path){
   for(const R of [5,15]){const rp=R/kmPerPx;let tot=0,wet=0;
     for(let j=Math.floor(py-rp);j<=Math.ceil(py+rp);j++)for(let i=Math.floor(px-rp);i<=Math.ceil(px+rp);i++){if((i-px)**2+(j-py)**2>rp*rp)continue;tot++;if(data[(j*768+i)*4+3]>16)wet++}
     out[R]=tot?wet/tot:0}
+  // กริดหยาบ 2×2 พิกเซล (≈2.4 กม./ช่อง) สำหรับประมาณทิศทางกลุ่มฝน
+  const G=384,mask=new Uint8Array(G*G);
+  for(let j=0;j<G;j++)for(let i=0;i<G;i++){let w=0;for(let b=0;b<2;b++)for(let a=0;a<2;a++){if(data[((j*2+b)*768+(i*2+a))*4+3]>16)w++}mask[j*G+i]=w>=2?1:0}
+  out.mask=mask;out.hx=px/2;out.hy=py/2;out.kmPerCell=kmPerPx*2;
   return out;
 }
 async function loadRadar(){
@@ -540,7 +528,53 @@ async function loadRadar(){
   // coverage for last 6 frames (60 min) for trend
   const recent=radarFrames.slice(-6);
   const cov=[];for(const f of recent){try{cov.push({t:new Date(f.time*1000),...(await radarCoverage(m.host,f.path))})}catch(e){}}
-  state.radar=cov;
+  state.radar=cov.map(({mask,...r})=>r);
+  state.radarMotion=null;
+  try{if(cov.length>=4)state.radarMotion=radarNowcast(cov[cov.length-4],cov[cov.length-1],(cov[cov.length-1].t-cov[cov.length-4].t)/60000)}catch(e){console.warn('nowcast',e)}
+}
+// ประมาณการเคลื่อนที่ของกลุ่มฝนจากภาพเรดาร์ 2 ภาพ (จับคู่รูปแบบ) แล้วเลื่อนภาพล่าสุดไปข้างหน้า 10–60 นาที
+function radarNowcast(a,b,dtMin){
+  const G=384,A=a.mask,B=b.mask,hx=Math.round(b.hx),hy=Math.round(b.hy),km=b.kmPerCell,W=36,S=12;
+  let wetA=0;for(let y=hy-W;y<=hy+W;y++)for(let x=hx-W;x<=hx+W;x++)wetA+=A[y*G+x];
+  let wetB=0;for(let y=hy-W;y<=hy+W;y++)for(let x=hx-W;x<=hx+W;x++)wetB+=B[y*G+x];
+  const res={wetA,wetB,dtMin,km};
+  if(wetA<15||wetB<15){res.reliable=false;res.reason=wetB<15?'แทบไม่มีฝนในรัศมี ~85 กม.':'ภาพก่อนหน้ามีฝนน้อยเกินไป';}
+  else{
+    let best=-1,bx=0,by=0;
+    for(let sy=-S;sy<=S;sy++)for(let sx=-S;sx<=S;sx++){let m=0;
+      for(let y=hy-W;y<=hy+W;y++){const ya=y*G,yb=(y+sy)*G;for(let x=hx-W;x<=hx+W;x++)if(A[ya+x]&&B[yb+x+sx])m++}
+      const sc=m/Math.sqrt(wetA*wetB)-0.002*(sx*sx+sy*sy);if(sc>best){best=sc;bx=sx;by=sy}}
+    res.score=best;res.reliable=best>=0.35;res.vx=bx/dtMin;res.vy=by/dtMin; // ช่อง/นาที
+    res.speed=Math.hypot(bx,by)*km/dtMin*60;
+    const brg=(Math.atan2(bx,-by)*180/Math.PI+360)%360;res.toward=brg;res.from=(brg+180)%360;
+    if(!res.reliable)res.reason='รูปแบบกลุ่มฝนเปลี่ยนเร็ว จับทิศทางไม่ได้';
+  }
+  const rb=5/km;res.steps=[0,10,20,30,40,50,60].map(T=>{const ox=res.reliable?res.vx*T:0,oy=res.reliable?res.vy*T:0;let tot=0,wet=0;
+    for(let y=Math.floor(hy-rb);y<=Math.ceil(hy+rb);y++)for(let x=Math.floor(hx-rb);x<=Math.ceil(hx+rb);x++){if((x-hx)**2+(y-hy)**2>rb*rb)continue;tot++;const sx=Math.round(x-ox),sy=Math.round(y-oy);if(sx>=0&&sy>=0&&sx<G&&sy<G&&B[sy*G+sx])wet++}
+    return {T,cov:tot?wet/tot:0}});
+  return res;
+}
+const DIR8=['เหนือ','ตะวันออกเฉียงเหนือ','ตะวันออก','ตะวันออกเฉียงใต้','ใต้','ตะวันตกเฉียงใต้','ตะวันตก','ตะวันตกเฉียงเหนือ'];
+function dirName(b){return DIR8[Math.round(b/45)%8]}
+let motionLayer=null;
+function renderNowcast(){
+  const n=state.radarMotion,box=$('nowcast');if(!box)return;
+  if(motionLayer){map.removeLayer(motionLayer);motionLayer=null}
+  if(!n){box.innerHTML='<div class="note">ข้อมูลเรดาร์ไม่พอสำหรับคาดการณ์</div>';return}
+  const st=n.steps,now=st[0].cov;let msg;
+  if(!n.reliable){msg=now>.1?`ตอนนี้มีฝนในรัศมี 5 กม. (${Math.round(now*100)}%) · ${n.reason}`:`ตอนนี้ไม่มีฝนในรัศมี 5 กม. · ${n.reason}`}
+  else{const arrive=st.find(x=>x.T>0&&x.cov>=.15),leave=st.find(x=>x.T>0&&x.cov<.1);
+    const mv=`กลุ่มฝนเคลื่อนจากทิศ${dirName(n.from)} ไปทาง${dirName(n.toward)} ~${Math.round(n.speed)} กม./ชม.`;
+    if(n.speed<5)msg=`กลุ่มฝนแทบไม่เคลื่อนที่ (< 5 กม./ชม.) · ${now>.1?'ฝนตรงนี้น่าจะตกต่ออีกพัก':'ยังไม่มีฝนเข้ามา'}`;
+    else if(now>=.15)msg=`ตอนนี้ฝนตกในรัศมี 5 กม. · ${leave?`น่าจะซาในราว ${leave.T} นาที`:'น่าจะยังตกต่ออย่างน้อย 1 ชม.'} · ${mv}`;
+    else msg=arrive?`ฝนน่าจะเข้ามาถึงในราว <b>${arrive.T} นาที</b> · ${mv}`:`ใน 1 ชม. ข้างหน้ากลุ่มฝนยังไม่น่าผ่านหมู่บ้าน · ${mv}`;
+    // ลูกศรบนแผนที่: จากจุดที่ฝนจะมาถึงใน 60 นาที ไปยังบ้าน
+    const dxKm=n.vx*60*n.km,dyKm=n.vy*60*n.km;const lat0=CONFIG.lat+dyKm/111,lon0=CONFIG.lon-dxKm/(111*Math.cos(CONFIG.lat*Math.PI/180));
+    if(n.speed>=5){motionLayer=L.polyline([[lat0,lon0],[CONFIG.lat,CONFIG.lon]],{color:'#B04A2B',weight:3,dashArray:'8 6'}).addTo(map).bindTooltip(`ฝนที่อยู่ตรงนี้ตอนนี้ จะเคลื่อนมาถึงบ้านในราว 60 นาที (${Math.round(n.speed)} กม./ชม.)`)}}
+  if(n.wetA>=15&&n.wetB>=15){const g=n.wetB/n.wetA-1;if(Math.abs(g)>=.15)msg+=` · พื้นที่ฝนในรัศมี ~85 กม. ${g>0?'ขยายตัว':'หดตัว'} ${Math.round(Math.abs(g)*100)}% ใน ${Math.round(n.dtMin)} นาที${g>0?' (ฝนกำลังก่อตัวเพิ่ม)':' (ฝนกำลังสลาย)'}`}
+  box.innerHTML=`<div style="font-size:14.5px;line-height:1.5">${msg}</div>
+    <div class="nc">${st.map(x=>`<div><div class="ncb"><i style="height:${Math.max(2,x.cov*100)}%;background:${x.cov>=.5?css('--clay'):x.cov>=.15?css('--ochre'):css('--water')}"></i></div><div class="l">${x.T?'+'+x.T:'ตอนนี้'}</div><div class="v">${Math.round(x.cov*100)}%</div></div>`).join('')}</div>
+    <div class="note">% พื้นที่มีฝนในรัศมี 5 กม. ถ้ากลุ่มฝนเคลื่อนที่ต่อด้วยทิศทางและความเร็วเดิม (เทียบภาพเรดาร์ห่างกัน ${Math.round(n.dtMin)} นาที) · ไม่รวมฝนที่ก่อตัวใหม่หรือสลายตัว จึงแม่นแค่ราว 1 ชม.</div>`;
 }
 function showFrame(i){
   frameIdx=i;radarLayers.forEach((l,k)=>l.setOpacity(k===i?.75:0));$('frame').value=i;
@@ -555,25 +589,29 @@ function tagFor(gap){if(gap==null)return '<span class="tag tn">ไม่มี�
 function staleTxt(t){if(!t)return '';const h=(Date.now()-t)/3600e3;return `<div class="${h>STALE_H?'stale':'note'}">${hhmm(t)} น. · ${ago(t)}${h>STALE_H?' (ข้อมูลค้าง)':''}</div>`}
 
 function renderCanals(){
-  const rows=[...(state.bma?.canals||[]),...(state.canals||[])];
+  // ถ้ามีค่าสดของ กทม. ที่ ปตร.คลองสองสายใต้ ให้ใช้แทนสถานี สสน. BKK001 (จุดเดียวกัน) ที่ค้าง
+  const sstOk=(state.bma?.canals||[]).some(c=>c.code==='WL.SST.01'&&c.time&&(Date.now()-c.time)<STALE_H*3600e3);
+  const rows=[...(state.bma?.canals||[]),...(state.canals||[]).filter(c=>!(sstOk&&c.code==='BKK001'&&!(c.time&&(Date.now()-c.time)<STALE_H*3600e3)))];
   const s=$('gauges');s.innerHTML='';const show=rows.filter(r=>r.gapCm!=null).slice(0,6);
-  const cw=520/Math.max(show.length,1),tw=44,top=26,H=130,px=H/150;
+  const cw=520/Math.max(show.length,1),tw=44,top=38,H=130,px=H/150;
   show.forEach((g,i)=>{const cx=i*cw+cw/2,x=cx-tw/2;const gap=Math.max(-20,Math.min(g.gapCm,150));
     el(s,'rect',{x,y:top,width:tw,height:H,rx:5,fill:css('--paper'),stroke:css('--rule')});
     const wy=top+Math.max(0,gap)*px;el(s,'rect',{x:x+1,y:wy,width:tw-2,height:top+H-wy-1,fill:gap<10?css('--clay'):gap<30?css('--ochre'):css('--water'),rx:3});
     el(s,'line',{x1:x-10,x2:x+tw+10,y1:top,y2:top,stroke:css('--clay'),'stroke-width':2});
     if(g.prev!=null&&g.bank!=null){const pg=Math.round((g.bank-g.prev)*100);const py=top+Math.max(0,Math.min(pg,150))*px;el(s,'line',{x1:x-6,x2:x+tw+6,y1:py,y2:py,stroke:css('--ink'),'stroke-dasharray':'4 3'})}
-    el(s,'text',{x:cx,y:16,'text-anchor':'middle','font-size':12.5,fill:css('--ink'),'font-weight':500},g.short);
+    {const m=String(g.short).match(/^(.*?)\s*(\(.*\))$/)||String(g.short).match(/^(\S+)\s+(.+)$/);const ls=m&&g.short.length>9?[m[1],m[2]]:[g.short];const fs=Math.min(12.5,cw/Math.max(...ls.map(x=>x.length))*1.55);
+      ls.forEach((t,j)=>el(s,'text',{x:cx,y:(ls.length>1?12:22)+j*14,'text-anchor':'middle','font-size':fs.toFixed(1),fill:css('--ink'),'font-weight':500},t))}
     el(s,'text',{x:cx,y:top+H+28,'text-anchor':'middle','font-size':22,'font-family':'Chakra Petch','font-weight':700,fill:css('--ink')},g.gapCm);
     el(s,'text',{x:cx,y:top+H+46,'text-anchor':'middle','font-size':11.5,fill:css('--ink2')},'ซม. ก่อนล้น');
     const st=g.time&&(Date.now()-g.time)/3600e3>STALE_H;if(st)el(s,'text',{x:cx,y:top+H+62,'text-anchor':'middle','font-size':11,fill:css('--ochre')},'ข้อมูลค้าง');
   });
-  el(s,'text',{x:0,y:228,'font-size':11,fill:css('--ink2')},'เส้นแดง = ตลิ่ง · เส้นประ = ค่าก่อนหน้า · หลอดลึก 1.5 ม. จากตลิ่ง');
+  el(s,'text',{x:0,y:246,'font-size':11,fill:css('--ink2')},'เส้นแดง = ตลิ่ง · เส้นประ = ค่าก่อนหน้า · หลอดลึก 1.5 ม. จากตลิ่ง');
   $('canalTable').innerHTML='<thead><tr><th>จุดวัด</th><th class="r">ระดับ (ม.รทก.)</th><th class="r">เหลือ (ซม.)</th><th>สถานะ</th></tr></thead><tbody>'+
-    rows.map(r=>`<tr><td>${esc(r.label)}<div class="note">${esc(r.src)}</div>${staleTxt(r.time)}</td><td class="r">${fmt(r.wl,2)}</td><td class="r">${r.gapCm??'–'}</td><td>${tagFor(r.gapCm)}</td></tr>`).join('')+
+    rows.map(r=>`<tr><td>${esc(r.label)}<div class="note">${esc(r.src)}${r.out!=null?` · นอกประตู ${fmt(r.out,2)} ม. (ประตูกั้นไว้ ${Math.round((r.out-r.wl)*100)} ซม.)`:''}</div>${staleTxt(r.time)}</td><td class="r">${fmt(r.wl,2)}</td><td class="r">${r.gapCm??'–'}</td><td>${tagFor(r.gapCm)}</td></tr>`).join('')+
     (state.bma?'':`<tr><td colspan="4" class="note">ระดับคลองสองของ กทม. ยังไม่แสดง เพราะเว็บ กทม. ไม่เปิดให้เว็บอื่นดึงข้อมูลตรง ตั้งค่า <code>bmaProxy</code> ตามไฟล์ README เพื่อเปิดใช้</td></tr>`)+'</tbody>';
 }
 function renderRoads(){
+  if(!document.getElementById('roadTable'))return; // การ์ดน้ำบนถนนถูกตัดออกจากหน้าแล้ว
   const fromBMA=!!state.bma;const rows=(fromBMA?state.bma.roads:(state.roadsTW||[])).filter(r=>!r.time||(Date.now()-r.time)<7*86400e3);
   const isStale=r=>r.time&&(Date.now()-r.time)>STALE_H*3600e3;
   const cell=r=>isStale(r)?`<span class="note">${r.v>0?fmt(r.v):'0'} (ค้าง)</span>`:(r.v>0?`<span class="tag ${r.v>15?'t2':'t1'}">${fmt(r.v)}</span>`:'<span class="tag t0">แห้ง</span>');
@@ -590,17 +628,27 @@ function riverQuality(r){
   return {ok:true};
 }
 function renderRiver(){
-  const S=state.river||[];const k=50/2.0; // 2 ม. = ครึ่งแถบ
-  const rows=S.map(r=>{const q=riverQuality(r);
-    const trend=q.ok&&r.prev!=null&&!isNaN(r.prev)?(r.wl-r.prev>.02?' ↑':r.wl-r.prev<-.02?' ↓':' →'):'';
-    let bar='',val='<span class="note">–</span>';
-    if(q.ok){const up=r.diffM>0,w=Math.min(Math.abs(r.diffM)*k,50);
-      bar=`<i style="${up?'left:50%':'right:50%'};width:${Math.max(w,1.5)}%;background:${up?css('--clay'):css('--water')}"></i>`;
-      val=`<span style="color:${up?css('--clay'):css('--water')}">${up?'+':'−'}${Math.abs(r.diffM).toFixed(2)}</span>${trend}`}
-    const meta=r.code?`${esc(r.code)}${r.agency?' · '+esc(r.agency):''}${q.ok?' · '+hhmm(r.time)+' น.':''}${q.why?` · <span class="stale">${esc(q.why)}</span>`:''}`:'';
-    return `<div class="rv-row${r.key?' key':''}${!q.ok||q.stale?' off':''}" role="listitem"><div><div class="rv-prov">${esc(r.prov)}</div><div class="rv-st">${esc(r.label)}${meta?'<br>'+meta:''}</div></div><div class="rv-bar">${bar}</div><div class="rv-v">${val}</div></div>`});
-  $('river').innerHTML=`<div class="rv-head"><span>จังหวัด / สถานี</span><span style="display:flex;justify-content:space-between"><span>← ต่ำกว่าตลิ่ง</span><span>ล้น →</span></span><span style="text-align:right">ม.</span></div>`+rows.join('')+
-    `<div class="rv-st" style="padding-top:6px">ปากแม่น้ำ (ป้อมพระจุลฯ) ไม่มีสถานีวัดสดในระบบ ThaiWater · ระดับช่วงล่างขึ้นลงตามน้ำทะเลหนุนวันละ 2 รอบ</div>`;
+  const svg=$('river');svg.innerHTML='';const S=state.river||[];
+  const W=640,left=26,right=8,datum=120,k=42,maxH=100,cw=(W-left-right)/Math.max(S.length,1),bw=Math.min(30,cw-12);
+  // แถบไฮไลต์สามเสน
+  S.forEach((r,i)=>{if(r.key)el(svg,'rect',{x:left+i*cw+2,y:6,width:cw-4,height:298,rx:8,fill:css('--ochre-bg')})});
+  el(svg,'line',{x1:left,x2:W-right,y1:datum,y2:datum,stroke:css('--ink'),'stroke-width':1.5});
+  el(svg,'text',{x:0,y:datum-4,'font-size':10,fill:css('--ink2')},'ตลิ่ง');
+  const foot=[];
+  S.forEach((r,i)=>{const q=riverQuality(r);const cx=left+i*cw+cw/2;
+    const g=el(svg,'g',{opacity:!q.ok||q.stale?.45:1});
+    el(g,'title',{},`${r.prov} · ${r.label}${r.code?' ('+r.code+(r.agency?' · '+r.agency:'')+')':''}${q.ok?` · ${fmt(r.wl,2)} ม.รทก. ตลิ่ง ${fmt(r.bank,2)} · ${hhmm(r.time)} น.`:''}${q.why?' · '+q.why:''}`);
+    if(q.ok){const up=r.diffM>0,h=Math.min(Math.abs(r.diffM)*k,maxH),col=up?css('--clay'):css('--water');
+      el(g,'rect',{x:cx-bw/2,y:up?datum-h:datum,width:bw,height:Math.max(h,2),rx:3,fill:col});
+      const tr=r.prev!=null&&!isNaN(r.prev)?(r.wl-r.prev>.02?'↑':r.wl-r.prev<-.02?'↓':''):'';
+      el(g,'text',{class:'halo',x:cx,y:up?datum-h-6:datum+h+14,'text-anchor':'middle','font-size':12,'font-family':'Chakra Petch','font-weight':700,fill:col},(up?'+':'−')+Math.abs(r.diffM).toFixed(2)+tr);
+      if(q.stale)foot.push(`${r.short}: ข้อมูลค้าง (${hhmm(r.time)} น.)`);
+    }else{el(g,'text',{x:cx,y:datum+16,'text-anchor':'middle','font-size':10.5,fill:css('--muted')},'ไม่มี');el(g,'text',{x:cx,y:datum+31,'text-anchor':'middle','font-size':10.5,fill:css('--muted')},'สถานี');
+      if(r.code)foot.push(`${r.short}: ${q.why}`)}
+    // ชื่อแกนล่าง (เอียง)
+    el(svg,'text',{x:cx+4,y:252,'text-anchor':'end','font-size':11.5,'font-weight':r.key?700:400,fill:css('--ink'),transform:`rotate(-45 ${cx+4} 252)`},r.short);
+  });
+  $('riverFoot').textContent=(foot.length?foot.join(' · ')+' · ':'')+'ซ้ายสุด = เหนือ (นครสวรรค์) · ขวาสุด = ใต้ (พระประแดง ใกล้ปากอ่าว) · ปากแม่น้ำ (ป้อมพระจุลฯ) ไม่มีสถานีวัดสดในระบบ ThaiWater · ช่วงล่างขึ้นลงตามน้ำทะเลหนุนวันละ 2 รอบ · แตะ/ชี้ที่แท่งเพื่อดูชื่อสถานีและเวลา';
   const qNow=state.rm?.qNow;
   $('riverNote').textContent='น้ำเหนือไม่ไหลเข้าสายไหมโดยตรง ผลต่อหมู่บ้านคือถ้าสามเสนสูง กทม. จะสูบน้ำจากคลองออกแม่น้ำได้ช้าลง'+(qNow?` · เขื่อนเจ้าพระยาปล่อย ${fmt(qNow)} ลบ.ม./วิ`:'');
 }
@@ -617,16 +665,22 @@ function renderRain(){
   $('rainTable').innerHTML='<thead><tr><th>สถานี</th><th class="r">ระยะ</th><th class="r">24 ชม.</th><th class="r">1 ชม.</th></tr></thead><tbody>'+
     (state.rainSt||[]).map(r=>`<tr><td>${esc(r.name)}<div class="note">${esc(r.amphoe)} · ${esc(r.prov)} · ${hhmm(r.time)} น.</div></td><td class="r">${fmt(r.d,1)} กม.</td><td class="r">${fmt(r.v,1)}</td><td class="r">${isNaN(r.v1)?'–':fmt(r.v1,1)}</td></tr>`).join('')+'</tbody>';
   const s=$('daily');s.innerHTML='';const d=state.daily;if(!d)return;
-  const n2=d.time.length,cw=520/n2,base=150,maxV=Math.max(30,...d.precipitation_sum),k=110/maxV;
-  [10,35].forEach(v=>{if(v<=maxV){el(s,'line',{x1:0,x2:520,y1:base-v*k,y2:base-v*k,stroke:css('--rule'),'stroke-dasharray':'2 4'});el(s,'text',{x:518,y:base-v*k-3,'text-anchor':'end','font-size':10,fill:css('--ink2')},v+' มม.')}});
-  el(s,'line',{x1:0,x2:520,y1:base,y2:base,stroke:css('--ink')});
+  const n2=d.time.length,cw=520/n2,base=186,maxV=Math.max(20,...d.precipitation_sum),k=88/maxV,wat=css('--water'),ink=css('--ink'),ink2=css('--ink2');
+  const lbl=(y,t)=>el(s,'text',{x:0,y,'font-size':12,'font-weight':600,fill:ink},t);
+  lbl(13,'โอกาสฝนตก');lbl(80,'ปริมาณฝน (มม.)');
+  el(s,'line',{x1:0,x2:520,y1:base,y2:base,stroke:ink});const WD=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
   d.time.forEach((t,i)=>{const v=d.precipitation_sum[i]||0,p=d.precipitation_probability_max[i],cx=i*cw+cw/2,w=cw*.62;
-    const col=v>=35?css('--clay'):v>=10?css('--ochre'):css('--water');
+    // แถวบน: โอกาสฝน เป็นช่องสี
+    if(p!=null){el(s,'rect',{x:i*cw+2,y:22,width:cw-4,height:30,rx:5,fill:wat,'fill-opacity':(.12+.88*p/100).toFixed(2)});
+      el(s,'text',{x:cx,y:41,'text-anchor':'middle','font-size':11,'font-weight':600,fill:p>=55?'#fff':ink},p+'%')}
+    // แถวล่าง: ปริมาณฝน เป็นแท่ง
+    const col=v>=35?css('--clay'):v>=10?css('--ochre'):wat;
     el(s,'rect',{x:cx-w/2,y:base-v*k,width:w,height:Math.max(v*k,1),fill:col,rx:2});
-    el(s,'text',{x:cx,y:base-v*k-5,'text-anchor':'middle','font-size':10,fill:css('--ink2')},p!=null?p+'%':'');
-    const dt=new Date(t+'T00:00:00+07:00');el(s,'text',{x:cx,y:base+16,'text-anchor':'middle','font-size':11,fill:css('--ink')},dt.getDate());
-    if(i===0||dt.getDate()===1)el(s,'text',{x:cx,y:base+32,'text-anchor':'middle','font-size':10,fill:css('--ink2')},dt.toLocaleDateString('th-TH',{month:'short'}));
-    el(s,'text',{x:cx,y:base+32+(i===0||dt.getDate()===1?12:0),'text-anchor':'middle','font-size':10,fill:css('--ink2')},fmt(v,0));
+    if(v>=1)el(s,'text',{x:cx,y:base-v*k-4,'text-anchor':'middle','font-size':10,fill:ink2},fmt(v,0));
+    // วันที่
+    const dt=new Date(t+'T00:00:00+07:00');
+    el(s,'text',{x:cx,y:base+16,'text-anchor':'middle','font-size':11,fill:ink,'font-weight':i===0?700:400},i===0?'วันนี้':dt.getDate());
+    el(s,'text',{x:cx,y:base+32,'text-anchor':'middle','font-size':9.5,fill:ink2},i===0||dt.getDate()===1?dt.toLocaleDateString('th-TH',{month:'short',day:'numeric',timeZone:'Asia/Bangkok'}):WD[new Date(t+'T12:00:00+07:00').getUTCDay()]);
   });
 }
 function renderRadarStats(){
@@ -642,19 +696,15 @@ function renderRadarStats(){
 }
 function fmtTH(d){return d?d.toLocaleString('th-TH',{weekday:'short',day:'numeric',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Bangkok'})+' น.':''}
 function renderWarn(){
-  const all=state.warnItems||[];
-  if(!all.length){$('warnSum').textContent='';$('warnList').innerHTML='<div class="note" style="padding:8px 0">ตอนนี้ไม่มีคำเตือนในระบบ</div>';return}
-  const loc=all.filter(x=>x.local),oth=all.filter(x=>!x.local);
-  const provs=new Set(all.map(x=>x.prov).filter(Boolean));
-  const t0=all.reduce((m,x)=>x.time&&(!m||x.time<m)?x.time:m,null),t1=all.reduce((m,x)=>x.time&&(!m||x.time>m)?x.time:m,null);
-  $('warnSum').innerHTML=`ทั้งหมด <b>${all.length}</b> รายการ ใน ${provs.size} จังหวัด · ใกล้บ้าน <b style="color:${loc.length?css('--clay'):css('--green')}">${loc.length}</b> รายการ · ช่วง ${t0?fmtTH(t0):'–'} ถึง ${t1?fmtTH(t1):'–'}`;
-  const row=x=>`<div class="wn${x.local?' local':''}"><span class="wn-t k${x.kind}">${esc(x.tag)}</span><span>${esc(x.text)}</span><span class="wn-time">${fmtTH(x.time)}${x.prov?' · จ.'+esc(x.prov):''}</span></div>`;
-  $('warnList').innerHTML=(loc.length?'<div class="wn-h">ใกล้บ้าน (กทม. ปทุมธานี นนทบุรี)</div>'+loc.map(row).join(''):'<div class="wn-h" style="color:var(--green)">ใกล้บ้าน: ไม่มีคำเตือน</div>')+
-    '<div class="wn-h">ทั่วประเทศ (ล่าสุดก่อน)</div>'+oth.sort((a,b)=>(b.time||0)-(a.time||0)).map(row).join('');
+  const all=state.warnItems||[];const loc=all.filter(x=>x.local).sort((a,b)=>(b.time||0)-(a.time||0));
+  $('warnSum').innerHTML=`ในโซน (กทม. ปทุมธานี นนทบุรี) <b style="color:${loc.length?css('--clay'):css('--green')}">${loc.length}</b> รายการ · ทั่วประเทศมี ${all.length} รายการ <a href="https://www.thaiwater.net/water/wl" target="_blank" rel="noopener">ดูทั้งหมดที่ ThaiWater</a>`;
+  const row=x=>`<div class="wn local"><span class="wn-t k${x.kind}">${esc(x.tag)}</span><span>${esc(x.text)}</span><span class="wn-time">${fmtTH(x.time)}${x.prov?' · จ.'+esc(x.prov):''}</span></div>`;
+  $('warnList').innerHTML=loc.length?loc.map(row).join(''):'<div class="note" style="padding:10px 0;color:var(--green)">ตอนนี้ไม่มีคำเตือนอัตโนมัติในโซนนี้</div>';
 }
 
 /* ---------- Risk ---------- */
 function scoreRisk(){
+  if(!document.getElementById('reasons'))return; // การ์ดประเมินความเสี่ยงถูกตัดออกจากหน้าแล้ว
   const R=[];const fresh=c=>c&&c.time&&(Date.now()-c.time)<STALE_H*3600e3;
   const gapPts=g=>g>60?0:g>30?1:g>=10?2:3;
   // คลองฝั่ง กทม. รอบโครงการ
@@ -664,7 +714,11 @@ function scoreRisk(){
   for(const c of (state.canals||[])){
     if(c.gapCm==null||!fresh(c)){R.push({p:null,label:`${c.label}: ไม่มีข้อมูลปัจจุบัน`,g:'คลอง'});continue}
     if(Math.abs(c.diffM)>4||c.wl<-3){R.push({p:null,label:`${c.label}: ค่าผิดปกติ ${fmt(c.wl,2)} ม. ไม่นำมาคิด (น่าจะเซนเซอร์ขัดข้อง)`,g:'คลอง'});continue}
-    if(c.outside){const v=c.diffM;R.push({p:v>=.3?3:v>=0?2:v>-.2?1:0,label:`${c.label} ${v>=0?'ล้นตลิ่ง '+Math.round(v*100):'ต่ำกว่าตลิ่ง '+Math.round(-v*100)} ซม.`,g:'คลอง'});continue}
+    if(c.gateInside){const v=c.diffM,ins=(state.canals||[]).find(x=>x.code===c.gateInside);const insOk=ins&&fresh(ins)&&ins.wl!=null&&!isNaN(ins.wl);const head=insOk?c.wl-ins.wl:null;const ig=insOk?ins.gapCm:null;
+      // นอกประตูสูง = แรงกด ยังไม่ใช่น้ำเข้าบ้าน · คะแนนจะสูงขึ้นก็ต่อเมื่อฝั่งในประตู (ฝั่งหมู่บ้าน) เริ่มสูงตาม · ถ้าฝั่งในไม่มีข้อมูลสด ให้ไม่เกิน 1
+      const over=v>=0.005;let p=over?1:0;if(over&&ig!=null&&ig<60)p=2;if(over&&ig!=null&&ig<30)p=3;
+      const lv=Math.abs(v)<0.005?'ระดับเท่าตลิ่ง':v>0?'ล้นตลิ่ง '+Math.round(v*100)+' ซม.':'ต่ำกว่าตลิ่ง '+Math.round(-v*100)+' ซม.';
+      R.push({p,label:`${c.label} ${lv}${head!=null?` · ประตูกั้นน้ำไว้ ${Math.round(head*100)} ซม.`:' · ฝั่งในประตูไม่มีข้อมูลสด จึงประเมินส่วนต่างไม่ได้'}`,g:'คลอง'});continue}
     R.push({p:gapPts(c.gapCm),label:`${c.label} เหลือ ${c.gapCm} ซม. ก่อนล้น`,g:'คลอง'});
   }
   const bmaRoads=(state.bma?.roads||[]).filter(fresh);const roads=bmaRoads.length?bmaRoads:(state.roadsTW||[]).filter(fresh);
@@ -693,13 +747,15 @@ async function loadWorst(){
   const W=CONFIG.worst,to=ymd(new Date(Date.now()+86400e3));
   const res=await Promise.all(W.stations.map(async s=>{
     const u=`${CONFIG.thaiwater}public/waterlevel_graph?station_type=tele_waterlevel&station_id=${s.id}&start_date=${W.baseFrom}&end_date=${to}`;
-    const j=await getJSON(u,40000);const a=(j.data?.graph_data||[]).filter(x=>x.value!=null&&!isNaN(x.value));
+    let j;try{j=await getJSON(u,40000)}catch(e){console.warn('worst',s.code,e);return {...s}} // สถานีใดดึงไม่ได้ ไม่ให้ทั้งการ์ดพัง
+    const a=(j.data?.graph_data||[]).filter(x=>x.value!=null&&!isNaN(x.value));
     if(!a.length)return {...s};
     const base=a.filter(x=>x.datetime>=W.baseFrom&&x.datetime<W.baseTo+' 23:59').reduce((m,x)=>Math.min(m,x.value),Infinity);
     let peak=null;for(const x of a)if(x.datetime>=W.from&&(!peak||x.value>peak.value))peak=x;
     const last=a[a.length-1];
     const pct=peak&&peak.value>base?(last.value-base)/(peak.value-base):null;
-    return {...s,base,peak:peak.value,peakT:parseTH(peak.datetime),now:last.value,nowT:parseTH(last.datetime),bank:j.data.min_bank,pct,series:a.filter((x,i)=>x.datetime>=W.from&&(i%6===0||i===a.length-1))};
+    const alt=s.alt?{altBase:s.alt.base,altPeak:s.alt.peak,altPeakT:parseTH(s.alt.peakT)}:{};
+    return {...s,...alt,base,peak:peak.value,peakT:parseTH(peak.datetime),now:last.value,nowT:parseTH(last.datetime),bank:j.data.min_bank,pct,series:a.filter((x,i)=>x.datetime>=W.from&&(i%6===0||i===a.length-1))};
   }));
   state.worst=res;
 }
@@ -707,12 +763,20 @@ function pctBar(p,col){const w=Math.max(0,Math.min(100,Math.round(p*100)));retur
 function pctCol(p){return p>=1?css('--clay'):p>=.66?css('--clay'):p>=.33?css('--ochre'):css('--green')}
 function renderWorst(){
   const W=CONFIG.worst,rows=[];
-  for(const s of state.worst||[]){if(s.pct==null)continue;rows.push({label:s.label,now:`${fmt(s.now,2)} ม.`,worst:`${fmt(s.peak,2)} ม. · ${s.peakT.toLocaleDateString('th-TH',{day:'numeric',month:'short'})}`,p:Math.max(0,s.pct),w:s.w,stale:s.nowT&&(Date.now()-s.nowT)>STALE_H*3600e3})}
+  // สถานี สสน. BKK001 ค้าง → ใช้ค่าล่าสุดของ กทม. (WL.SST.01 ปตร.คลองสองสายใต้ ฝั่งใน จุดเดียวกัน) แทน
+  const fr=t=>t&&(Date.now()-t)<STALE_H*3600e3;
+  const sst=(state.bma?.canals||[]).find(c=>c.code==='WL.SST.01'&&c.wl!=null&&fr(c.time));
+  const list=(state.worst||[]).map(s=>{if(!s.alt||!sst||sst.code!==s.alt.code||(s.pct!=null&&fr(s.nowT)))return s;
+    if(s.pct==null){const pct=(sst.wl-s.alt.base)/(s.alt.peak-s.alt.base);return {...s,now:sst.wl,nowT:sst.time,pct,peak:s.alt.peak,peakT:parseTH(s.alt.peakT),src:state.bma.src}} // ดึงประวัติ สสน. ไม่ได้
+    // เทียบค่า กทม. กับฐานและจุดสูงสุดของเซนเซอร์ กทม. เอง แล้วแปลงกลับเป็นสเกลของสถานี สสน. เพื่อวาดต่อในกราฟ
+    const pct=(sst.wl-s.altBase)/(s.altPeak-s.altBase);const dt=sst.time.toLocaleString('sv-SE',{timeZone:'Asia/Bangkok'}).slice(0,16);
+    return {...s,now:sst.wl,nowT:sst.time,pct,peak2:s.altPeak,peakT2:s.altPeakT,src:state.bma.src,series:[...(s.series||[]),{datetime:dt,value:s.base+pct*(s.peak-s.base),gap:true}]}});
+  for(const s of list){if(s.pct==null)continue;rows.push({label:s.label+(s.src?` · ค่าล่าสุดจากเซนเซอร์ ${s.src}`:''),now:`${fmt(s.now,2)} ม.`,worst:`${fmt(s.peak2??s.peak,2)} ม. · ${(s.peakT2??s.peakT).toLocaleDateString('th-TH',{day:'numeric',month:'short'})}`,p:Math.max(0,s.pct),w:s.w,stale:s.nowT&&(Date.now()-s.nowT)>STALE_H*3600e3})}
   const near=(state.bma?.roads||[]).filter(r=>r.d<=2.5&&r.time&&(Date.now()-r.time)<STALE_H*3600e3);
   if(near.length){const mx=Math.max(...near.map(r=>r.v||0));rows.push({label:W.road.label,now:`${fmt(mx)} ซม.`,worst:`${W.road.worstCm} ซม. · 26–29 ก.ย.`,p:mx/W.road.worstCm,w:W.road.w})}
   else rows.push({label:W.road.label,now:'ไม่มีข้อมูลสด',worst:`${W.road.worstCm} ซม.`,p:null,w:0});
   if(state.rainObs!=null)rows.push({label:W.rain.label,now:`${fmt(state.rainObs,1)} มม.`,worst:`${W.rain.worstMm} มม. · 26–27 ก.ย.`,p:state.rainObs/W.rain.worstMm,w:W.rain.w});
-  const valid=rows.filter(r=>r.p!=null&&r.w>0);const sw=valid.reduce((s,r)=>s+r.w,0);
+  const valid=rows.filter(r=>r.p!=null&&r.w>0&&!r.stale);const sw=valid.reduce((s,r)=>s+r.w,0);
   const comp=sw?valid.reduce((s,r)=>s+r.w*Math.min(r.p,1.5),0)/sw:null;
   state.worstPct=comp;
   if(comp==null){$('wPct').textContent='–';$('wText').textContent='ดึงข้อมูลประวัติไม่ได้';return}
@@ -722,17 +786,19 @@ function renderWorst(){
   $('wTable').innerHTML='<thead><tr><th>ตัวชี้วัด</th><th class="r">ตอนนี้</th><th class="r">วันแย่สุด</th><th>เทียบ</th></tr></thead><tbody>'+
     rows.map(r=>`<tr><td>${esc(r.label)}${r.stale?'<div class="stale">ข้อมูลค้าง</div>':''}</td><td class="r">${r.now}</td><td class="r">${r.worst}</td><td style="white-space:nowrap">${r.p==null?'<span class="note">–</span>':pctBar(r.p,pctCol(r.p))+'<span class="num" style="font-size:13px">'+Math.round(r.p*100)+'%</span>'}</td></tr>`).join('')+'</tbody>';
   // chart: % ของวันแย่สุดของทุกคลอง
-  const g=$('wChart');g.innerHTML='';const L=(state.worst||[]).filter(x=>x.series&&x.series.length&&x.peak>x.base);if(!L.length)return;
+  const g=$('wChart');g.innerHTML='';const L=list.filter(x=>x.series&&x.series.length&&x.peak>x.base);if(!L.length)return;
   const t0=Math.min(...L.map(x=>parseTH(x.series[0].datetime).getTime())),t1=Date.now();
   const X=t=>44+(626-44)*(t-t0)/(t1-t0),Y=v=>190-170*Math.max(-.1,Math.min(1.15,v))/1.15;
   [0,.5,1].forEach(v=>{el(g,'line',{x1:44,x2:626,y1:Y(v),y2:Y(v),stroke:v===1?css('--clay'):css('--rule'),'stroke-dasharray':v===1?'':'3 4','stroke-width':v===1?1.4:1});el(g,'text',{x:40,y:Y(v)+4,'text-anchor':'end','font-size':11,fill:v===1?css('--clay'):css('--ink2')},Math.round(v*100)+'%')});
-  el(g,'text',{x:48,y:Y(1)-5,'font-size':11,fill:css('--clay')},'วันแย่สุด');
-  el(g,'text',{x:48,y:Y(0)-5,'font-size':11,fill:css('--ink2')},'ระดับปกติ');
-  L.forEach((st,k)=>{let d='';st.series.forEach((p,i)=>{const v=(p.value-st.base)/(st.peak-st.base);d+=(i?'L':'M')+X(parseTH(p.datetime).getTime()).toFixed(1)+' '+Y(v).toFixed(1)});
+  L.forEach((st,k)=>{let d='';st.series.forEach((p,i)=>{const v=(p.value-st.base)/(st.peak-st.base);d+=(i&&!p.gap?'L':'M')+X(parseTH(p.datetime).getTime()).toFixed(1)+' '+Y(v).toFixed(1)});
     el(g,'path',{d,fill:'none',stroke:st.color,'stroke-width':k===0?2.6:1.6,'stroke-dasharray':['','6 3','2 3','8 3 2 3',''][k]||'','stroke-linejoin':'round'});
+    const gi=st.series.findIndex(p=>p.gap);if(gi>0){const a=st.series[gi-1],b=st.series[gi],v=p=>(p.value-st.base)/(st.peak-st.base);
+      el(g,'line',{x1:X(parseTH(a.datetime).getTime()),y1:Y(v(a)),x2:X(parseTH(b.datetime).getTime()),y2:Y(v(b)),stroke:st.color,'stroke-width':1.6,'stroke-dasharray':'2 4',opacity:.8})}
     const nx=X(st.nowT.getTime()),ny=Y(st.pct);el(g,'circle',{cx:nx,cy:ny,r:3.5,fill:st.color});});
-  for(let t=new Date(new Date(t0).toISOString().slice(0,10)+'T00:00:00+07:00').getTime()+86400e3;t<=t1;t+=2*86400e3){const x=X(t);el(g,'line',{x1:x,x2:x,y1:190,y2:195,stroke:css('--ink2')});el(g,'text',{x,y:210,'text-anchor':'middle','font-size':11,fill:css('--ink2')},new Date(t).toLocaleDateString('th-TH',{day:'numeric',month:'short',timeZone:'Asia/Bangkok'}))}
-  $('wLegend').innerHTML=L.map(st=>`<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:18px;height:3px;background:${st.color};display:inline-block"></span>${esc(st.short)} <b class="num">${Math.round(st.pct*100)}%</b></span>`).join('');
+  el(g,'text',{class:'halo',x:48,y:Y(1)-5,'font-size':11,fill:css('--clay')},'วันแย่สุด');
+  el(g,'text',{class:'halo',x:48,y:Y(0)-5,'font-size':11,fill:css('--ink2')},'ระดับปกติ');
+  for(let t=new Date(new Date(t0).toISOString().slice(0,10)+'T00:00:00+07:00').getTime()+86400e3;t<=t1;t+=2*86400e3){const x=X(t);el(g,'line',{x1:x,x2:x,y1:190,y2:195,stroke:css('--ink2')});el(g,'text',{x,y:214,'text-anchor':'middle','font-size':11,fill:css('--ink2')},new Date(t).toLocaleDateString('th-TH',{day:'numeric',month:'short',timeZone:'Asia/Bangkok'}))}
+  $('wLegend').innerHTML=L.map(st=>`<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:18px;height:3px;background:${st.color};display:inline-block"></span>${esc(st.short)} <b class="num">${Math.round(st.pct*100)}%</b>${st.src?' <span class="note">(ค่าล่าสุดจากเซนเซอร์ กทม. · เส้นประ = ช่วงไม่มีข้อมูล)</span>':''}${st.nowT&&(Date.now()-st.nowT)>STALE_H*3600e3?` <span class="stale">(ค้างตั้งแต่ ${st.nowT.toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Bangkok'})} ไม่นับรวม)</span>`:''}</span>`).join('');
 }
 
 /* ---------- River (northern water) model ---------- */
@@ -757,11 +823,11 @@ async function loadRiverModel(){
   state.riverFactor=riverFactor(state.rm.predMax);
 }
 let rmTimer=null;
-function renderRiverModel(){
+function renderRiverModel(){if(!document.getElementById('rmQ'))return;
   const m=state.rm;if(!m){$('rmHint').textContent='ดึงข้อมูลประวัติน้ำเหนือไม่ได้';return}
   const sl=$('rmQ');if(!sl.dataset.touched){sl.value=Math.round(m.qNow/100)*100}
   const Q=+sl.value;$('rmQv').textContent=fmt(Q)+' ลบ.ม./วิ';
-  $('rmNow').textContent=`ตอนนี้ปล่อย ${fmt(m.qNow)} ลบ.ม./วิ · น้ำใช้เวลาราว ${m.lag} วันกว่าจะส่งผลที่สามเสน (ความสัมพันธ์ r = ${m.r.toFixed(2)} จาก ${m.n} วัน)`;
+  $('rmNow').textContent=`ตอนนี้ปล่อย ${fmt(m.qNow)} ลบ.ม./วิ · ${m.lag?`น้ำใช้เวลาราว ${m.lag} วันกว่าจะส่งผลที่สามเสน`:'ส่งผลที่สามเสนภายในวันเดียวกัน'} (ความสัมพันธ์ r = ${m.r.toFixed(2)} จาก ${m.n} วัน)`;
   const h=m.a+m.b*Q/1;const hQ=m.a+m.b*Q;const lo=hQ-m.sd,hi=hQ+m.sd;
   $('rmH').textContent=fmt(hQ,2)+' ม.';$('rmHr').textContent=`ช่วง ${fmt(lo,2)}–${fmt(hi,2)} ม. · ตลิ่ง ${fmt(m.bank,2)} ม.`;
   const st=hi>=m.wall-.2?['เสี่ยงล้นคันกั้นน้ำ',css('--clay')]:hQ>=m.bank?['นอกคันท่วม ในคันยังกันได้',css('--ochre')]:hi>=m.bank?['ใกล้ตลิ่ง ช่วงน้ำทะเลหนุนอาจล้น',css('--ochre')]:['ต่ำกว่าตลิ่ง',css('--green')];
@@ -792,17 +858,16 @@ function renderRiverModel(){
   const tr=c=>c&&c.prev!=null&&!isNaN(c.prev)?(c.wl-c.prev>.02?'ขึ้น ↑':c.wl-c.prev<-.02?'ลง ↓':'ทรงตัว'):'';
   $('rmEast').innerHTML=`<b style="color:var(--ink)">เส้นทางตะวันออก (มีผลต่อคลองหกวาโดยตรง):</b> เขื่อนพระรามหกปล่อย ${s26?.q?fmt(s26.q)+' ลบ.ม./วิ':s26?.wl!=null?'(ท้ายเขื่อน '+fmt(s26.wl,2)+' ม. เหลือ '+s26.gapCm+' ซม. ก่อนล้น)':'–'} · คลองระพีพัฒน์ใต้ ${b13?fmt(b13.wl,2)+' ม. เหลือ '+b13.gapCm+' ซม. '+tr(b13):'–'} · หกวา ลำลูกกา ${b15?fmt(b15.wl,2)+' ม. เหลือ '+b15.gapCm+' ซม. '+tr(b15):'–'} — ถ้าระพีพัฒน์ใกล้ล้นและลำลูกกาเริ่มขึ้น ให้ระวังน้ำทุ่งไหลลงคลองหกวาในอีก 1–3 วัน`;
 }
-$('rmQ').addEventListener('input',e=>{e.target.dataset.touched='1';renderRiverModel()});
 
 /* ---------- House flood model ---------- */
 const MODEL={capMax:45,capMin:10,capPerGapCm:.45,pondCmPerMm:.6,drainCmPerMm:.25,drainBase:.5,canalCmPerMm:.3,pumpCmPerH:.7,overflowCm:.3,sigma:1.2,runs:3000,hours:120,maxMmH:150,ksgFromHokwa:.68};
 function floorCm(){let v=NaN;try{v=parseFloat(localStorage.getItem('floorCm'))}catch(e){}const i=$('floor');if(!isNaN(v)&&i&&document.activeElement!==i)i.value=v;return parseFloat(i.value)}
 function modelInputs(){
-  // ระยะคลองสองก่อนล้น: ใช้ค่า กทม. ถ้าสด ไม่งั้นประมาณจากคลองลาดพร้าว ท้าย ปตร.คลอง 2
+  // ระยะคลองสองก่อนล้น: ใช้ค่า กทม. ถ้าสด ไม่งั้นประมาณจากคลองสอง ในประตูคลองสองสายใต้ (ThaiWater BKK001)
   const k=state.bma?.canals?.find(c=>c.key&&c.gapCm!=null&&c.time&&(Date.now()-c.time)<STALE_H*3600e3);
-  const h=state.canals?.find(c=>c.code==='BKK001'&&c.gapCm!=null);
+  const h=state.canals?.find(c=>c.code==='BKK001'&&c.gapCm!=null&&c.time&&(Date.now()-c.time)<STALE_H*3600e3);
   const gap=k?k.gapCm:h?Math.round(h.gapCm*MODEL.ksgFromHokwa):60;
-  const gapSrc=k?'คลองสอง (กทม.)':h?'ประมาณจากคลองลาดพร้าว ท้าย ปตร.คลอง 2':'ค่าตั้งต้น';
+  const gapSrc=k?'คลองสอง (กทม.)':h?'ประมาณจากคลองสอง ในประตูคลองสองสายใต้':'ค่าตั้งต้น';
   const near=(state.bma?.roads||[]).filter(r=>r.d<=2.5&&r.time&&(Date.now()-r.time)<STALE_H*3600e3);
   const road=near.length?Math.max(...near.map(r=>r.v||0)):0;
   return {gap,gapSrc,road,roadSrc:near.length?'เซนเซอร์ กทม. ≤ 2.5 กม.':'ไม่มีข้อมูลสด (ใช้ 0)'};
@@ -885,26 +950,25 @@ async function refresh(){
   const tasks={
     'ระดับน้ำ ThaiWater':loadThaiWater().then(()=>{renderCanals();renderRiver()}),
     'ฝนวัดจริง':loadRainObs().then(renderRain),
-    'พยากรณ์ฝน':loadForecast().then(renderRain),
+    'พยากรณ์ฝน':loadForecast().then(()=>{renderRain();renderCloud()}),
     'คำเตือน':loadWarnings().then(renderWarn),
     'ข้อมูล กทม.':loadBMA().then(async()=>{const fr=(state.bma?.roads||[]).some(r=>r.time&&(Date.now()-r.time)<STALE_H*3600e3);if(!fr)await loadRoadsFallback();setCfgNote();renderRoads();renderCanals()}),
-    'เรดาร์':loadRadar().then(renderRadarStats),
+    'เรดาร์':loadRadar().then(()=>{renderRadarStats();renderNowcast()}),
     'ประวัติวันแย่สุด':loadWorst(),
-    'แบบจำลองน้ำเหนือ':loadRiverModel(),
+    'น้ำเหนือย้อนหลัง':loadRiverModel(),
   };
   const errs=[];
   await Promise.all(Object.entries(tasks).map(([k,p])=>p.catch(e=>{errs.push(k);console.warn(k,e)})));
   scoreRisk();
   try{renderWorst()}catch(e){console.warn('worst',e)}
   try{renderHouse()}catch(e){console.warn('house',e)}
-  try{renderRiverModel()}catch(e){console.warn('rm',e)}
   $('updated').innerHTML=`อัปเดต ${hhmm(new Date())} น.`+(errs.length?` · <span class="err">โหลดไม่ได้: ${errs.join(', ')}</span>`:'');
   $('refresh').disabled=false;
 }
 $('refresh').addEventListener('click',refresh);
-$('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';renderCanals();renderRiver();renderRain();renderRadarStats();renderWorst();renderHouse();renderRiverModel()});
+$('theme').addEventListener('click',()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';renderCanals();renderRiver();renderRain();renderRadarStats();renderCloud();try{renderNowcast()}catch(e){};renderWorst();renderHouse()});
 floorCm();
-function setCfgNote(){$('cfgNote').textContent=state.bma?(CONFIG.bmaProxy==='auto'?'ข้อมูล กทม. จากไฟล์ที่ GitHub Actions อัปเดต':'ข้อมูล กทม. ดึงผ่านตัวกลางที่ตั้งค่าไว้'):'ยังไม่มีข้อมูล กทม. (ดู README: GitHub Actions หรือ Cloudflare Worker)';}
+function setCfgNote(){$('cfgNote').textContent=state.bma?('ข้อมูล '+state.bma.src):'ยังไม่มีข้อมูล กทม. (ดู README: GitHub Actions หรือ Cloudflare Worker)';}
 setCfgNote();
 initMap();refresh();setInterval(refresh,CONFIG.refreshMinutes*60000);
 
