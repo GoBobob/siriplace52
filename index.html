@@ -330,6 +330,9 @@ const CONFIG = {
   // สำรอง: ข้อมูล กทม. ที่เว็บเฝ้าน้ำ (faonam.com) ดึงมาเปิดให้ใช้ (อัปเดตทุก ~5 นาที) ใช้เมื่อแหล่งด้านบนไม่มี/ค้าง · '' = ปิด
   bmaMirror: 'https://faonam.com/api/bma/',
   thaiwater: 'https://api-v3.thaiwater.net/api/v1/thaiwater30/',
+  // สำรองเมื่อ ThaiWater ปฏิเสธเพราะเรียกถี่เกิน (HTTP 429): สำเนาที่ faonam.com เก็บไว้ (อัปเดตทุก ~2–3 นาที) · '' = ปิด
+  twMirror: 'https://faonam.com/api/tw/',
+  graphCacheMin: 120, // ข้อมูลย้อนหลัง (กราฟ) เก็บในเบราว์เซอร์กี่นาทีก่อนดึงใหม่
   refreshMinutes: 10,
   // สถานี ThaiWater ที่ใช้
   canals: [
@@ -388,6 +391,28 @@ function parseTH(s){if(!s)return null;const d=new Date(String(s).replace(' ','T'
 function ago(d){if(!d)return '';const m=Math.round((Date.now()-d)/60000);if(m<60)return m+' นาทีที่แล้ว';const h=Math.round(m/60);if(h<48)return h+' ชม.ที่แล้ว';return Math.round(h/24)+' วันที่แล้ว'}
 function hhmm(d){return d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Bangkok'})}
 async function getJSON(url,ms=25000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(t)}}
+// ดึงข้อมูล ThaiWater: ลองต้นทางก่อน ถ้าถูกจำกัด (429) หรือดึงไม่ได้ ใช้สำเนา faonam.com (เฉพาะชุดข้อมูลที่เขามี)
+async function getTW(path,ms){
+  try{return await getJSON(CONFIG.thaiwater+path,ms)}
+  catch(e){if(CONFIG.twMirror&&/^public\/(waterlevel_load|rain_24h|warning|flood_road)\b/.test(path)){const j=await getJSON(CONFIG.twMirror+path,ms);state.twMirror=true;return j}throw e}
+}
+// กราฟย้อนหลัง: เก็บไว้ในเบราว์เซอร์ (ลดจำนวนครั้งที่เรียก ThaiWater) · เรียกทีละรายการเว้น 0.4 วิ · ถ้าดึงไม่ได้ใช้ของเก่าที่เก็บไว้
+let graphQ=Promise.resolve();
+function getGraph(stationType,id,from,to){
+  const url=`${CONFIG.thaiwater}public/waterlevel_graph?station_type=${stationType}&station_id=${id}&start_date=${from}&end_date=${to}`;
+  const key='tw:'+stationType+':'+id+':'+(from===CONFIG.worst.baseFrom?'w':'r'); // w = ช่วงวันแย่สุด, r = 90 วันล่าสุด
+  const unpack=c=>({data:{graph_data:c.g.map(x=>({datetime:x[0],value:x[1],discharge:x[2]})),min_bank:c.b},cachedAt:c.t});
+  let c=null;try{c=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}
+  if(c&&c.f===from&&Date.now()-c.t<CONFIG.graphCacheMin*60e3)return Promise.resolve(unpack(c));
+  const job=graphQ.then(async()=>{
+    try{const j=await getJSON(url,40000);
+      const g=(j.data?.graph_data||[]).filter(x=>x.value!=null||x.discharge!=null).map(x=>[x.datetime,x.value,x.discharge??null]);
+      const n={t:Date.now(),f:from,b:j.data?.min_bank??null,g};try{localStorage.setItem(key,JSON.stringify(n))}catch(e){}
+      return unpack(n)}
+    catch(e){if(c){state.graphStale=true;return unpack(c)}throw e}
+    finally{await new Promise(r=>setTimeout(r,400))}});
+  graphQ=job.catch(()=>{});return job;
+}
 function arr(j){if(Array.isArray(j))return j;for(const k of ['items','data','stations','records'])if(Array.isArray(j?.[k]))return j[k];const a=j&&Object.values(j).find(Array.isArray);return a||[]}
 const STALE_H=6;
 
@@ -395,7 +420,7 @@ const state={};
 
 /* ---------- Data loaders ---------- */
 async function loadThaiWater(){
-  const j=await getJSON(CONFIG.thaiwater+'public/waterlevel_load',40000);
+  const j=await getTW('public/waterlevel_load',40000);
   const list=j.waterlevel_data?.data||[];
   const by={};for(const x of list){const c=x.station?.tele_station_oldcode;if(c)by[c]=x}
   const pick=code=>{const x=code&&by[code];if(!x)return null;const wl=parseFloat(x.waterlevel_msl),prev=parseFloat(x.waterlevel_msl_previous),bank=parseFloat(x.station.min_bank);
@@ -406,7 +431,7 @@ async function loadThaiWater(){
 }
 async function loadRainObs(){
   const all=[];
-  for(const p of CONFIG.rainProvinces){try{const j=await getJSON(CONFIG.thaiwater+'public/rain_24h?province_code='+p);all.push(...(j.data||[]))}catch(e){}}
+  for(const p of CONFIG.rainProvinces){try{const j=await getTW('public/rain_24h?province_code='+p);all.push(...(j.data||[]))}catch(e){}}
   const st=all.map(x=>({name:x.station?.tele_station_name?.th||'',amphoe:x.geocode?.amphoe_name?.th||'',prov:x.geocode?.province_name?.th||'',v:parseFloat(x.rain_24h),v1:parseFloat(x.rain_1h),time:parseTH(x.rainfall_datetime),
     d:distKm(CONFIG.lat,CONFIG.lon,x.station?.tele_station_lat,x.station?.tele_station_long)})).filter(s=>!isNaN(s.v)&&!isNaN(s.d)&&s.time&&(Date.now()-s.time)<STALE_H*3600e3).sort((a,b)=>a.d-b.d);
   state.rainSt=st.slice(0,8);state.rainAll=st;
@@ -445,7 +470,7 @@ function renderCloud(){
   $('cloudNote').innerHTML=`<b style="color:var(--ink)">${sky}</b> (เฉลี่ย ${Math.round(cAvg)}%) · โอกาสฝนสูงสุด ${pk.p??'–'}% ช่วง ${hhmm(pk.t)} น. · ฝนรวม 12 ชม. ~${fmt(sum,1)} มม. (เฉลี่ยทั้งพื้นที่ ฝนเฉพาะจุดอาจหนักกว่านี้) · แบบจำลอง Open-Meteo`;
 }
 async function loadWarnings(){
-  const j=await getJSON(CONFIG.thaiwater+'public/warning');
+  const j=await getTW('public/warning');
   const items=[];
   for(const b of (j.data||[])){
     const parts=String(b.message||'').split(/\n\s*\n/).map(t=>t.trim()).filter(Boolean);
@@ -482,7 +507,7 @@ async function loadBMA(){
   state.bma=res;
 }
 async function loadRoadsFallback(){
-  const j=await getJSON(CONFIG.thaiwater+'public/flood_road');
+  const j=await getTW('public/flood_road');
   state.roadsTW=(j.data||[]).map(x=>({name:x.station?.floodroad_name?.th,v:+x.floodroad_value,lat:+x.station?.floodroad_lat,lon:+x.station?.floodroad_long,time:parseTH(x.floodroad_datetime)}))
     .filter(x=>!isNaN(x.lat)).map(x=>({...x,d:distKm(CONFIG.lat,CONFIG.lon,x.lat,x.lon)})).filter(x=>x.d<=4).sort((a,b)=>a.d-b.d);
 }
@@ -746,8 +771,7 @@ function ymd(d){return new Date(d.getTime()+7*3600e3).toISOString().slice(0,10)}
 async function loadWorst(){
   const W=CONFIG.worst,to=ymd(new Date(Date.now()+86400e3));
   const res=await Promise.all(W.stations.map(async s=>{
-    const u=`${CONFIG.thaiwater}public/waterlevel_graph?station_type=tele_waterlevel&station_id=${s.id}&start_date=${W.baseFrom}&end_date=${to}`;
-    let j;try{j=await getJSON(u,40000)}catch(e){console.warn('worst',s.code,e);return {...s}} // สถานีใดดึงไม่ได้ ไม่ให้ทั้งการ์ดพัง
+    let j;try{j=await getGraph('tele_waterlevel',s.id,W.baseFrom,to)}catch(e){console.warn('worst',s.code,e);return {...s}} // สถานีใดดึงไม่ได้ ไม่ให้ทั้งการ์ดพัง
     const a=(j.data?.graph_data||[]).filter(x=>x.value!=null&&!isNaN(x.value));
     if(!a.length)return {...s};
     const base=a.filter(x=>x.datetime>=W.baseFrom&&x.datetime<W.baseTo+' 23:59').reduce((m,x)=>Math.min(m,x.value),Infinity);
@@ -805,7 +829,7 @@ function renderWorst(){
 function riverFactor(h){return h<=2?1:Math.max(.65,1-.35*(h-2)/1)}
 async function loadRiverModel(){
   const from=ymd(new Date(Date.now()-90*86400e3)),to=ymd(new Date(Date.now()+86400e3));
-  const g=async(id,field,agg)=>{const j=await getJSON(`${CONFIG.thaiwater}public/waterlevel_graph?station_type=tele_waterlevel&station_id=${id}&start_date=${from}&end_date=${to}`,40000);
+  const g=async(id,field,agg)=>{const j=await getGraph('tele_waterlevel',id,from,to);
     const d={};for(const x of j.data.graph_data){const v=x[field];if(v==null||isNaN(v))continue;(d[x.datetime.slice(0,10)]=d[x.datetime.slice(0,10)]||[]).push(+v)}
     const o={};for(const k in d)o[k]=agg==='max'?Math.max(...d[k]):d[k].reduce((a,b)=>a+b,0)/d[k].length;return {o,bank:j.data.min_bank}};
   const [q,c]=await Promise.all([g(2744,'discharge','mean'),g(2599,'value','max')]);
@@ -946,7 +970,7 @@ $('floor').addEventListener('input',()=>{try{localStorage.setItem('floorCm',$('f
 
 /* ---------- Orchestration ---------- */
 async function refresh(){
-  $('updated').textContent='กำลังอัปเดต…';$('refresh').disabled=true;
+  state.twMirror=false;state.graphStale=false;$('updated').textContent='กำลังอัปเดต…';$('refresh').disabled=true;
   const tasks={
     'ระดับน้ำ ThaiWater':loadThaiWater().then(()=>{renderCanals();renderRiver()}),
     'ฝนวัดจริง':loadRainObs().then(renderRain),
@@ -962,7 +986,7 @@ async function refresh(){
   scoreRisk();
   try{renderWorst()}catch(e){console.warn('worst',e)}
   try{renderHouse()}catch(e){console.warn('house',e)}
-  $('updated').innerHTML=`อัปเดต ${hhmm(new Date())} น.`+(errs.length?` · <span class="err">โหลดไม่ได้: ${errs.join(', ')}</span>`:'');
+  $('updated').innerHTML=`อัปเดต ${hhmm(new Date())} น.`+(state.twMirror?' · ThaiWater จำกัดการเรียก ใช้สำเนาจาก faonam.com':'')+(state.graphStale?' · กราฟย้อนหลังใช้ข้อมูลที่เก็บไว้':'')+(errs.length?` · <span class="err">โหลดไม่ได้: ${errs.join(', ')}</span>`:'');
   $('refresh').disabled=false;
 }
 $('refresh').addEventListener('click',refresh);
